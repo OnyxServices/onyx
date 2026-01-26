@@ -42,80 +42,128 @@
         }
 
         /* --- Pantalla de Carga Mejorada --- */
-        #loader-wrapper {
+       /* --- Nueva Pantalla de Carga Profesional --- */
+#loader-wrapper {
     position: fixed;
-    inset: 0; /* top:0 right:0 bottom:0 left:0 */
-    
-    background-image: url('https://www.veritas.org.mx/Publicacion/img/transferencias-bancarias-beneficios-de-incluir-el-concepto');
-    background-size: cover;       /* ocupa toda la pantalla */
-    background-position: center;  /* bien centrada */
-    background-repeat: no-repeat;
-
+    inset: 0;
+    background: url('https://www.veritas.org.mx/Publicacion/img/transferencias-bancarias-beneficios-de-incluir-el-concepto') no-repeat center center;
+    background-size: cover;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-
     z-index: 10000;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* capa de opacidad */
 #loader-wrapper::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.9); /* 90% negro = imagen al 10% visible */
+    background: radial-gradient(circle at center, rgba(11, 15, 25, 0.85) 0%, rgba(11, 15, 25, 0.98) 100%);
+    backdrop-filter: blur(4px);
 }
 
-/* asegura que el contenido quede encima */
-#loader-wrapper > * {
+.loader-content {
     position: relative;
-    z-index: 1;
+    z-index: 10;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
 }
 
-        .loader-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            text-align: center;
-            max-width: 90%;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-        }
-        
-        .loader-card h2 {
-             background: linear-gradient(90deg, var(--primary), #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.loader-brand {
+    margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease-out;
+}
 
-        .ad-slider { height: 50px; 
-            overflow: hidden; 
-            margin: 20px 0; 
-        }
+.loader-brand h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+}
 
-        .ad-item { font-size: 1rem; color: var(--text-secondary); line-height: 50px; animation: slideVertical 6s infinite ease-in-out; }
+.loader-brand p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
 
-        @keyframes slideVertical {
-            0%, 20% { transform: translateY(0); opacity: 1; }
-            25% { transform: translateY(-50px); opacity: 0; }
-            25.01% { transform: translateY(50px); opacity: 0; } /* Entra desde abajo */
-            30%, 45% { transform: translateY(0); opacity: 1; }
-            50% { transform: translateY(-50px); opacity: 0; }
-            /* ... se puede continuar el patrón para más items ... */
-        }
-        
-        .spinner {
-            width: 40px; height: 40px; 
-            border: 3px solid var(--glass-border); 
-            border-top-color: var(--primary); 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-            margin: 0 auto;
-        }
+/* Contenedor de Información */
+.loader-info-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 30px;
+}
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+#loader-status-text {
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 15px;
+    height: 20px;
+    display: block;
+}
+
+/* Barra de Progreso */
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #00d4ff);
+    box-shadow: 0 0 15px var(--primary-light);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.progress-percentage {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+/* Tips de seguridad / Info */
+.loader-tips {
+    height: 40px;
+    margin-top: 20px;
+}
+
+.tip-item {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    opacity: 0.8;
+    display: none;
+    animation: fadeInUp 0.5s ease;
+}
+
+.tip-item.active { display: block; }
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
         /* --- Header con Superposición de Gradiente --- */
         header {
@@ -540,21 +588,54 @@
     }
 }
 
+/* Loader */
+#main-progress-bar {
+    height: 6px;             /* Altura de la barra */
+    width: 0%;               /* Empieza en 0% */
+    background-color: #4caf50; /* Color de la barra */
+    border-radius: 3px;
+    transition: width 0.5s ease-in-out; /* Efecto suave */
+}
+
+/* Opcional: fondo de la barra */
+#progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background-color: #333;
+    border-radius: 3px;
+    overflow: hidden;
+}
     </style>
 </head>
 <body>
 
-<!-- Pantalla de Carga -->
+    <!-- Pantalla de Carga Profesional -->
 <div id="loader-wrapper">
-    <div class="loader-card">
-        <h2 style="margin:0; font-weight:800; font-size: 2rem;">⚡ FastCuba</h2>
-        <div class="ad-slider">
-            <div class="ad-item">Transferencias seguras de Zelle a Cuba</div>
-            <div class="ad-item">Entrega garantizada en < 2 horas</div>
-            <div class="ad-item">La mejor tasa: <span id="tasa-promo">Cargando...</span> CUP x 1 USD</div>
-            <div class="ad-item">Soporte 24/7 vía WhatsApp</div>
+    <div class="loader-content">
+        <div class="loader-brand">
+            <h2>FastCuba</h2>
+            <p>Premium Transfer</p>
         </div>
-        <div class="spinner"></div>
+
+        <div class="loader-info-box">
+            <span id="loader-status-text">Estableciendo conexión segura...</span>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="main-progress-bar"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="progress-percentage" id="progress-percent">0%</span>
+                <span style="font-size: 10px; color: var(--text-secondary); text-transform: uppercase;">AES-256 Encryption</span>
+            </div>
+
+            <div class="loader-tips">
+                <div class="tip-item active">Verificando tasas de cambio en tiempo real...</div>
+                <div class="tip-item">Tus transferencias por Zelle están protegidas.</div>
+                <div class="tip-item">Soporte técnico activo 24/7.</div>
+                <div class="tip-item">Más de 5,000 envíos exitosos este mes.</div>
+            </div>
+        </div>
     </div>
 </div>
 

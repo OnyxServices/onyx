@@ -24,67 +24,126 @@ document.addEventListener('DOMContentLoaded', () => {
     setupListeners(); 
 });
 
+// --- FUNCIONES DEL LOADER ---
+function actualizarLoader(progreso, mensaje) {
+    const bar = document.getElementById('main-progress-bar');
+    const percentText = document.getElementById('progress-percent');
+    const statusText = document.getElementById('loader-status-text');
+
+    if(bar) bar.style.width = `${progreso}%`;
+    if(percentText) percentText.innerText = `${progreso}%`;
+    if(statusText && mensaje) statusText.innerText = mensaje;
+}
+
+function rotarTips() {
+    const tips = document.querySelectorAll('.tip-item');
+    if(!tips.length) return null;
+    let currentTip = 0;
+    tips[currentTip].classList.add('active');
+
+    return setInterval(() => {
+        tips[currentTip].classList.remove('active');
+        currentTip = (currentTip + 1) % tips.length;
+        tips[currentTip].classList.add('active');
+    }, 2500);
+}
+
+// --- INICIALIZAR TODO ---
 async function inicializar() {
     const startTime = Date.now();
+    const tipInterval = rotarTips();
+
+    const quitarLoader = () => {
+        const loader = document.getElementById('loader-wrapper');
+        if(!loader) return;
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => loader.remove(), 800);
+    };
 
     try {
-        // Obtener tasa y cuenta zelle de la tabla config
-        const { data: config, error: errConfig } = await supabaseClient.from('config').select('*').limit(1).single();
-        if (errConfig) throw errConfig;
+        actualizarLoader(15, "Iniciando protocolos de seguridad...");
 
-        tasaCambio = config?.tasa_cambio || 0;
-        cuentaZelle = config?.zelle_cuenta || "pago@fastcuba.com";
-        
-        // Actualizar elementos de la interfaz si existen
-        if(document.getElementById('tasa-promo')) document.getElementById('tasa-promo').innerText = tasaCambio;
-        if(document.getElementById('zelle-account')) document.getElementById('zelle-account').innerText = cuentaZelle;
-        if(document.getElementById('home-tasa-val')) document.getElementById('home-tasa-val').innerText = tasaCambio + " CUP";
+        if(typeof supabaseClient === 'undefined') {
+            throw new Error("supabaseClient no definido. Revisa la carga de la librería Supabase.");
+        }
 
-        // Obtener tramos de comisiones
-        const { data: comisiones, error: errCom } = await supabaseClient.from('comisiones').select('*').order('monto_min',{ascending:true});
-        if (errCom) throw errCom;
-        tramosComision = comisiones || [];
+        await new Promise(r => setTimeout(r, 600)); // Delay estético
+        actualizarLoader(45, "Sincronizando con base de datos...");
 
-    } catch (e) {
-        console.error(" Error de carga:", e);
+        // Consultas en paralelo
+        const [configResult, comisionesResult] = await Promise.all([
+            supabaseClient.from('config').select('*').limit(1).single(),
+            supabaseClient.from('comisiones').select('*').order('monto_min', { ascending: true })
+        ]);
+
+        if(configResult.error) throw configResult.error;
+        if(comisionesResult.error) throw comisionesResult.error;
+
+        actualizarLoader(80, "Actualizando tasas y comisiones...");
+
+        // Guardar datos globales
+        const config = configResult.data ?? {};
+        tasaCambio = config.tasa_cambio ?? 0;
+        cuentaZelle = config.zelle_cuenta ?? 'pago@fastcuba.com';
+        tramosComision = comisionesResult.data ?? [];
+
+        // Actualizar DOM
+        const tasaPromo = document.getElementById('tasa-promo');
+        const zelleAcc = document.getElementById('zelle-account');
+        const homeTasaVal = document.getElementById('home-tasa-val');
+
+        if(tasaPromo) tasaPromo.textContent = tasaCambio;
+        if(zelleAcc) zelleAcc.textContent = cuentaZelle;
+        if(homeTasaVal) homeTasaVal.textContent = `${tasaCambio} CUP`;
+
+        // Actualizar calculadora HOME
+        const homeInput = document.getElementById('home-monto-usd');
+        if(homeInput) {
+            const montoInicial = parseFloat(homeInput.value) || 0;
+            actualizarCalculosHome(montoInicial);
+        }
+
+        actualizarLoader(100, "Sistema listo para operar");
+
+    } catch(error) {
+        console.error('❌ Error al inicializar:', error);
+        const statusText = document.getElementById('loader-status-text');
+        if(statusText) {
+            statusText.style.color = 'var(--error)';
+            statusText.innerText = "Error de conexión. Reintente.";
+        }
     } finally {
-        // Quitar pantalla de carga tras al menos 2 segundos para elegancia
         const elapsed = Date.now() - startTime;
-        const remaining = Math.max(2000 - elapsed, 0); 
-
+        const delay = Math.max(4000, 6000 - elapsed); // Asegura que se vea 100% un momento
         setTimeout(() => {
-            const loader = document.getElementById('loader-wrapper');
-            if(loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 1000);
-            }
-        }, remaining);
+            clearInterval(tipInterval);
+            quitarLoader();
+        }, delay);
     }
 }
 
-// 4. Listeners para Calculadoras (Home y Modal)
+// --- LISTENERS DE CALCULADORAS ---
 function setupListeners() {
-    // Calculadora del HOME
     const homeInput = document.getElementById('home-monto-usd');
-    if (homeInput) {
-        homeInput.addEventListener('input', (e) => {
-            const monto = parseFloat(e.target.value) || 0;
-            actualizarCalculosHome(monto);
-        });
-    }
+    if(homeInput) homeInput.addEventListener('input', e => {
+        const monto = parseFloat(e.target.value) || 0;
+        actualizarCalculosHome(monto);
+    });
 
-    // Calculadora del MODAL (Paso 1)
     const modalInput = document.getElementById('monto_usd');
-    if (modalInput) {
-        modalInput.addEventListener('input', (e) => {
-            const monto = parseFloat(e.target.value) || 0;
-            const comision = obtenerComision(monto);
-            document.getElementById('total_usd').innerText = `$${(monto + comision).toFixed(2)}`;
-            document.getElementById('total_cup').innerText = `${(monto * tasaCambio).toLocaleString('es-CU')} CUP`;
-        });
-    }
+    if(modalInput) modalInput.addEventListener('input', e => {
+        const monto = parseFloat(e.target.value) || 0;
+        const comision = obtenerComision(monto);
+        const totalUsd = document.getElementById('total_usd');
+        const totalCup = document.getElementById('total_cup');
+
+        if(totalUsd) totalUsd.innerText = `$${(monto + comision).toFixed(2)}`;
+        if(totalCup) totalCup.innerText = `${(monto * tasaCambio).toLocaleString('es-CU')} CUP`;
+    });
 }
 
+// --- CALCULOS ---
 function obtenerComision(monto) {
     const tramo = tramosComision.find(t => monto >= t.monto_min && monto <= t.monto_max);
     return tramo ? parseFloat(tramo.comision) : 0;
@@ -95,44 +154,44 @@ function actualizarCalculosHome(monto) {
     const totalPagar = monto + comision;
     const recibenCup = monto * tasaCambio;
 
-    if(document.getElementById('home-monto-cup')) 
-        document.getElementById('home-monto-cup').value = recibenCup.toLocaleString('es-CU') + " CUP";
-    
-    if(document.getElementById('home-comision-val')) 
-        document.getElementById('home-comision-val').innerText = `$${comision.toFixed(2)}`;
-    
-    if(document.getElementById('home-total-pagar')) 
-        document.getElementById('home-total-pagar').innerText = `$${totalPagar.toFixed(2)}`;
+    const inputCup = document.getElementById('home-monto-cup');
+    if(inputCup) inputCup.value = `${recibenCup.toLocaleString('es-CU')} CUP`;
 
-    // Sincronizar con el input del modal automáticamente
+    const comisionVal = document.getElementById('home-comision-val');
+    if(comisionVal) comisionVal.innerText = `$${comision.toFixed(2)}`;
+
+    const totalPagarEl = document.getElementById('home-total-pagar');
+    if(totalPagarEl) totalPagarEl.innerText = `$${totalPagar.toFixed(2)}`;
+
     const modalInput = document.getElementById('monto_usd');
     if(modalInput) modalInput.value = monto;
 }
 
-// 5. Funciones de Navegación del Modal
+// --- FUNCIONES DE MODAL Y BOTONES ---
 function abrirModal() {
     const notification = document.getElementById('fab-notification');
     if(notification) notification.style.display = 'none';
 
     const modal = document.getElementById('modalTransferencia');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    if(modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function cerrarModal() {
     const modal = document.getElementById('modalTransferencia');
-    modal.style.display = 'none';
+    if(modal) modal.style.display = 'none';
     document.body.style.overflow = 'auto';
     resetForm();
 }
 
 function nextStep(step) {
-    // Validación de campos antes de avanzar
     const activeStepDiv = document.querySelector('.step.active');
-    if (activeStepDiv && parseInt(activeStepDiv.id.split('-')[1]) < step) {
+    if(activeStepDiv && parseInt(activeStepDiv.id.split('-')[1]) < step) {
         const inputs = activeStepDiv.querySelectorAll('input[required]');
-        for (let input of inputs) {
-            if (!input.value.trim()) {
+        for(let input of inputs){
+            if(!input.value.trim()){
                 Swal.fire({ icon: 'warning', title: 'Falta información', text: 'Por favor rellena los campos marcados.', background: '#24243e', color: '#fff' });
                 return;
             }
@@ -140,171 +199,37 @@ function nextStep(step) {
     }
 
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById(`step-${step}`).classList.add('active');
+    const nextDiv = document.getElementById(`step-${step}`);
+    if(nextDiv) nextDiv.classList.add('active');
 }
 
 function iniciarConMonto() {
     const monto = parseFloat(document.getElementById('home-monto-usd')?.value) || 0;
-    if (monto < 50) {
+    if(monto < 50){
         Swal.fire({ icon: 'warning', title: 'Monto mínimo', text: 'El envío mínimo es de $50 USD', background: '#1e2332', color: '#fff' });
         return;
     }
     abrirModal();
-    nextStep(1); 
+    nextStep(1);
 }
 
 function copiarZelle() {
-    const texto = document.getElementById('zelle-account').innerText;
-    navigator.clipboard.writeText(texto).then(() => {
+    const texto = document.getElementById('zelle-account')?.innerText;
+    if(texto) navigator.clipboard.writeText(texto).then(() => {
         Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Copiado!', showConfirmButton: false, timer: 1500 });
     });
 }
 
 function resetForm() {
-    document.getElementById('form-transaccion').reset();
+    const form = document.getElementById('form-transaccion');
+    if(form) form.reset();
+
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step-0').classList.add('active');
+    const step0 = document.getElementById('step-0');
+    if(step0) step0.classList.add('active');
 }
 
-// Funciones para el Modal de Tracking
-function abrirModalTracking() {
-    document.getElementById('modalTracking').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function cerrarModalTracking() {
-    document.getElementById('modalTracking').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    document.getElementById('tracking-results').style.display = 'none';
-    document.getElementById('search-input').value = '';
-}
-
-async function buscarTransaccion() {
-    const busqueda = document.getElementById('search-input').value.trim();
-    const resultsContainer = document.getElementById('tracking-results');
-    
-    if (!busqueda) {
-        Swal.fire({ icon: 'info', title: 'Atención', text: 'Ingresa tu número de WhatsApp.', background: '#1e2332', color: '#fff' });
-        return;
-    }
-
-    resultsContainer.innerHTML = '<p style="text-align:center;">Buscando...</p>';
-    resultsContainer.style.display = 'block';
-
-    try {
-        // Intentamos la consulta SIN el .order() para evitar el error de columna inexistente
-        const { data, error } = await supabaseClient
-            .from('transacciones')
-            .select('*')
-            .eq('remitente_whatsapp', busqueda)
-            .limit(5); // Traemos los últimos 5 encontrados
-
-        if (error) {
-            console.error("Detalle del error Supabase:", error);
-            throw error;
-        }
-
-        if (!data || data.length === 0) {
-            resultsContainer.innerHTML = '<p style="color:var(--error); text-align:center;">No se encontraron envíos con este número.</p>';
-            return;
-        }
-
-        resultsContainer.innerHTML = '<h4 style="margin-bottom:15px; border-bottom: 1px solid #333; padding-bottom:5px;">Envíos encontrados:</h4>';
-        
-        data.forEach(tr => {
-            // Intentamos obtener una fecha, si no existe created_at usamos "Reciente"
-            const fechaFormateada = tr.created_at ? new Date(tr.created_at).toLocaleDateString() : 'Reciente';
-            
-            const card = `
-                <div class="tracking-card">
-                    <div style="display:flex; justify-content:space-between; align-items:start;">
-                        <div>
-                            <small style="color:var(--text-secondary)">${fechaFormateada}</small>
-                            <div style="font-weight:700;">Para: ${tr.beneficiario_nombre || 'No indicado'}</div>
-                        </div>
-                        <span class="status-pill status-${(tr.estado || 'pendiente').toLowerCase()}">${tr.estado || 'Pendiente'}</span>
-                    </div>
-                    <div class="tracking-info">
-                        <span>Enviado: $${tr.monto_usd} USD</span>
-                        <strong style="color:var(--primary)">${(tr.monto_usd * (tr.tasa_cambio || 0)).toLocaleString()} CUP</strong>
-                    </div>
-                </div>
-            `;
-            resultsContainer.innerHTML += card;
-        });
-
-    } catch (err) {
-        console.error("Error completo:", err);
-        resultsContainer.innerHTML = `<p style="color:var(--error); font-size:0.8rem;">Error: ${err.message || 'Consulta fallida'}. Verifica que la columna 'remitente_whatsapp' exista.</p>`;
-    }
-}
-
-// Exponer funciones al objeto window
-window.abrirModalTracking = abrirModalTracking;
-window.cerrarModalTracking = cerrarModalTracking;
-window.buscarTransaccion = buscarTransaccion;
-
-// 6. Envío de Datos a Supabase
-async function subirImagen(file) {
-    if(!file) return null;
-    const carpeta = new Date().toISOString().split('T')[0];
-    const extension = file.name.split('.').pop();
-    const ruta = `${carpeta}/${Date.now()}.${extension}`;
-    
-    const { data, error } = await supabaseClient.storage.from('comprobantes').upload(ruta, file);
-    if (error) return null;
-    return supabaseClient.storage.from('comprobantes').getPublicUrl(ruta).data.publicUrl;
-}
-
-document.getElementById('form-transaccion').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const btn = document.getElementById('btn-enviar');
-    const fileInput = document.getElementById('comprobante');
-
-    if (fileInput.files.length === 0) {
-        Swal.fire({ icon: 'warning', title: 'Comprobante requerido', text: 'Sube la captura de tu pago Zelle.', background: '#24243e', color: '#fff' });
-        return;
-    }
-
-    btn.disabled = true;
-    btn.innerText = "Procesando...";
-
-    Swal.fire({ title: 'Enviando...', text: 'Estamos registrando tu operación', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
-    try {
-        const url = await subirImagen(fileInput.files[0]);
-        if(!url) throw new Error("No se pudo subir la imagen.");
-
-        const monto = parseFloat(document.getElementById('monto_usd').value);
-        const data = {
-            monto_usd: monto,
-            comision_usd: obtenerComision(monto),
-            tasa_cambio: tasaCambio,
-            remitente_nombre: document.getElementById('remitente_nombre').value,
-            remitente_whatsapp: document.getElementById('remitente_whatsapp').value,
-            beneficiario_nombre: document.getElementById('beneficiario_nombre').value,
-            beneficiario_provincia: document.getElementById('beneficiario_provincia').value,
-            beneficiario_whatsapp: document.getElementById('beneficiario_whatsapp').value,
-            comprobante_url: url,
-            estado: 'pendiente'
-        };
-
-        const { error } = await supabaseClient.from('transacciones').insert([data]);
-        if(error) throw error;
-
-        Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Recibimos tu solicitud. Te contactaremos pronto.', background: '#24243e', color: '#fff' });
-        cerrarModal();
-
-    } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "Finalizar Envío";
-    }
-});
-
-// Exponer funciones globales para los botones HTML (onclick)
+// --- EXPONER FUNCIONES GLOBALES ---
 window.copiarZelle = copiarZelle;
 window.abrirModal = abrirModal;
 window.cerrarModal = cerrarModal;

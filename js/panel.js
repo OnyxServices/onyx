@@ -59,26 +59,37 @@ const suscripcionTransacciones = supabaseClient
     .subscribe();
     
 // --- LÓGICA DE CONFIGURACIÓN (TASA) ---
+
+// Carga tanto la tasa como la cuenta Zelle
 async function cargarTasa() {
-    // Usamos .limit(1) sin .single() para evitar errores si la tabla está vacía
     const { data, error } = await supabaseClient.from('config').select('*').limit(1);
     if (data && data.length > 0) {
         document.getElementById('tasa_cambio').value = data[0].tasa_cambio;
-        // Guardamos el ID real para las actualizaciones
+        document.getElementById('zelle_cuenta').value = data[0].zelle_cuenta || ''; // Cargar Zelle
         window.configId = data[0].id;
     }
 }
 
-async function actualizarTasa() {
-    const v = parseFloat(document.getElementById('tasa_cambio').value);
-    const id = window.configId || 1; // Usa el ID detectado o 1 por defecto
-    const { error } = await supabaseClient.from('config').update({tasa_cambio: v}).eq('id', id);
+// Guarda ambos valores al mismo tiempo
+async function actualizarConfig() {
+    const tasa = parseFloat(document.getElementById('tasa_cambio').value);
+    const zelle = document.getElementById('zelle_cuenta').value;
+    const id = window.configId || 1;
+
+    const { error } = await supabaseClient
+        .from('config')
+        .update({
+            tasa_cambio: tasa,
+            zelle_cuenta: zelle // Guardar Zelle
+        })
+        .eq('id', id);
     
     if (error) {
         Toast.fire({ icon: 'error', title: 'Error: ' + error.message });
     } else {
-        Toast.fire({ icon: 'success', title: 'Tasa actualizada' });
-        cargarTransacciones();
+        Toast.fire({ icon: 'success', title: 'Configuración guardada' });
+        // Opcional: recargar las tablas por si la tasa cambió
+        if(typeof cargarTransacciones === 'function') cargarTransacciones();
     }
 }
 
@@ -176,14 +187,20 @@ async function guardarComision(id) {
 }
 
 async function agregarFilaComision() {
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from('comisiones')
-        .insert([{ monto_min: 0, monto_max: 0, comision: 0 }]);
+        .insert([{ monto_min: 0, monto_max: 0, comision: 0 }])
+        .select(); // <-- devuelve la fila creada
 
     if (error) {
         Toast.fire({ icon: 'error', title: 'Error al crear' });
     } else {
         cargarComisiones();
+        setTimeout(() => {
+            const nuevoId = data[0].id;
+            const inputMin = document.getElementById(`min-${nuevoId}`);
+            if(inputMin) inputMin.focus();
+        }, 50);
     }
 }
 
@@ -324,6 +341,63 @@ async function cambiarEstado(id, nuevoEstado) {
     }
 }
 
+async function borrarTodasTransacciones() {
+    if(!confirm("⚠️ Esto eliminará TODAS las transacciones y sus archivos en el Bucket. ¿Continuar?")) return;
+
+    try {
+        // 1. Obtener los datos antes de borrarlos de la tabla
+        const { data: transacciones, error: errList } = await supabaseClient
+            .from('transacciones')
+            .select('comprobante_url');
+
+        if(errList) throw errList;
+
+        // 2. Extraer los nombres de archivo limpios
+        const paths = transacciones
+            .map(tx => {
+                if(!tx.comprobante_url) return null;
+                try {
+                    // Extraemos lo que hay después de /comprobantes/
+                    const urlSinQuery = tx.comprobante_url.split('?')[0]; // Quitamos parámetros ?t=...
+                    const partes = urlSinQuery.split('/comprobantes/');
+                    if (partes.length < 2) return null;
+                    
+                    // Decodificamos espacios y caracteres especiales (%20 -> " ")
+                    return decodeURIComponent(partes[1]);
+                } catch (e) { return null; }
+            })
+            .filter(path => path !== null);
+
+        // 3. Borrar del Bucket (Storage)
+        if(paths.length > 0) {
+            console.log("Intentando borrar archivos:", paths);
+            const { data: delData, error: errDelFiles } = await supabaseClient.storage
+                .from('comprobantes')
+                .remove(paths);
+            
+            if(errDelFiles) {
+                console.error("Error detallado Storage:", errDelFiles);
+                Toast.fire({ icon: 'warning', title: 'Registros borrados, pero los archivos en el Bucket fallaron (Revisa permisos RLS)' });
+            }
+        }
+
+        // 4. Borrar registros de la base de datos
+        const { error: errDelTx } = await supabaseClient
+            .from('transacciones')
+            .delete()
+            .neq('id', 0); // Filtro de seguridad para permitir borrado masivo
+
+        if(errDelTx) throw errDelTx;
+
+        Toast.fire({ icon: 'success', title: 'Limpieza total completada' });
+        cargarTransacciones();
+        cargarMetricas();
+
+    } catch (error) {
+        Toast.fire({ icon: 'error', title: 'Error: ' + error.message });
+        console.error(error);
+    }
+}
 // --- TEMPORIZADOR ---
 setInterval(() => {
     segundosParaRefresco--;
@@ -336,9 +410,9 @@ setInterval(() => {
     if (timerLabel) timerLabel.innerText = `Actualizando en: ${segundosParaRefresco}s`;
 }, 1000);
 
-window.onload = () => {
-    cargarTasa();
-    cargarComisiones();
-    cargarTransacciones();
-    cargarMetricas();    
-};
+document.addEventListener('DOMContentLoaded', async () => {
+    await cargarTasa();
+    await cargarComisiones();
+    await cargarTransacciones();
+    await cargarMetricas();
+});
