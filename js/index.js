@@ -229,6 +229,86 @@ function resetForm() {
     if(step0) step0.classList.add('active');
 }
 
+// --- Funciones de Rastreo Corregidas ---
+
+function abrirModalTracking() {
+    const modal = document.getElementById('modalTracking');
+    modal.classList.add('active'); // Usamos clases para la animación
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalTracking() {
+    const modal = document.getElementById('modalTracking');
+    modal.classList.remove('active');
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+    document.body.style.overflow = 'auto';
+    document.getElementById('tracking-results').style.display = 'none';
+    document.getElementById('search-input').value = '';
+}
+
+async function buscarTransaccion() {
+    const busqueda = document.getElementById('search-input').value.trim();
+    const resultsContainer = document.getElementById('tracking-results');
+    
+    if (!busqueda) {
+        Swal.fire({ icon: 'warning', title: 'Atención', text: 'Ingresa tu número de WhatsApp.', background: '#1e2332', color: '#fff' });
+        return;
+    }
+
+    resultsContainer.innerHTML = '<p style="text-align:center; padding:20px;">Buscando...</p>';
+    resultsContainer.style.display = 'block';
+
+    try {
+        // 1. ELIMINAMOS el .order('created_at') para que no de error
+        const { data, error } = await supabaseClient
+            .from('transacciones')
+            .select('*')
+            .eq('remitente_whatsapp', busqueda)
+            .limit(5); 
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            resultsContainer.innerHTML = `
+                <div style="text-align:center; padding: 20px; border: 1px dashed rgba(255,255,255,0.2); border-radius:15px;">
+                    <p style="color:var(--text-secondary); margin:0;">No se encontraron envíos para este número.</p>
+                </div>`;
+            return;
+        }
+
+        resultsContainer.innerHTML = '<h4 style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:15px;">ENVÍOS ENCONTRADOS:</h4>';
+        
+        data.forEach(tr => {
+            // 2. USAMOS UNA FECHA ALTERNATIVA: 
+            // Si created_at no existe, intentamos usar otra columna o ponemos "Reciente"
+            const fechaLabel = tr.created_at ? new Date(tr.created_at).toLocaleDateString() : 'Envío Reciente';
+            const estado = (tr.estado || 'pendiente').toLowerCase();
+            const cupRecibe = (tr.monto_usd * (tr.tasa_cambio || tasaCambio)).toLocaleString();
+
+            const card = `
+                <div class="tracking-card">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <small style="color:var(--text-secondary); font-size:0.7rem;">${fechaLabel}</small>
+                            <div style="font-weight:700; font-size:0.9rem;">${tr.beneficiario_nombre || 'Sin nombre'}</div>
+                        </div>
+                        <span class="status-pill status-${estado}">${estado}</span>
+                    </div>
+                    <div class="tracking-info" style="margin-top:10px; display:flex; justify-content:space-between;">
+                        <span style="opacity:0.7">$${tr.monto_usd} USD</span>
+                        <strong style="color:var(--primary)">${cupRecibe} CUP</strong>
+                    </div>
+                </div>`;
+            resultsContainer.innerHTML += card;
+        });
+
+    } catch (err) {
+        console.error("Error detallado:", err);
+        resultsContainer.innerHTML = `<p style="color:var(--error); font-size:0.8rem; text-align:center;">Error al consultar la base de datos.</p>`;
+    }
+}
+
 // --- EXPONER FUNCIONES GLOBALES ---
 window.copiarZelle = copiarZelle;
 window.abrirModal = abrirModal;
