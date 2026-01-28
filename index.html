@@ -124,26 +124,52 @@
         <form id="form-transaccion">
             <!-- PASO 0: Información de Pago (NUEVO) -->
             <div class="step active" id="step-0">
-                <h2 style="margin-top:0; font-weight: 700;">Información de Pago</h2>
-                <p style="font-size:0.9rem; color: var(--text-secondary); line-height: 1.4;">
-                    Para procesar tu envío, primero debes realizar la transferencia por Zelle a la siguiente cuenta. Copia el dato y procede con el pago.
-                </p>
-                
-                <div class="calc-box" style="text-align: center; border: 1px dashed var(--primary);">
-                    <label>Cuenta Zelle Oficial</label>
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px;">
-                        <span id="zelle-account" style="font-size: 1.2rem; font-weight: 800; color: white;">pago@fastcuba.com</span>
-                        <button type="button" onclick="copiarZelle()" style="background: var(--primary); border: none; border-radius: 8px; color: white; padding: 5px 10px; cursor: pointer; font-size: 0.8rem;">
-                            Copiar
-                        </button>
-                    </div>
-                </div>
+    <h2 style="margin-top:0; font-weight:700;">
+        Información de Pago
+    </h2>
 
-                <div class="nav-buttons" style="display:flex; gap:10px; margin-top: 30px;">
-                    <button type="button" class="btn btn-cancel" onclick="cerrarModal()">Cerrar</button>
-                    <button type="button" class="btn btn-next" onclick="nextStep(1)">Ya pagué, continuar</button>
-                </div>
-            </div>
+    <div style="font-size:0.9rem; color:var(--text-secondary); line-height:1.4;">
+        <p>Para procesar tu envío, sigue estos pasos:</p>
+
+        <ol style="padding-left:1.2rem; margin:0.5rem 0 0 0;">
+            <li>
+                Primero debes realizar la transferencia por <strong>Zelle</strong> a la siguiente cuenta.
+            </li>
+            <li>
+                Toma una captura de la confirmación de la transferencia.
+            </li>
+            <li>
+                Si ya realizaste la transferencia y tienes la captura, presiona <strong>Continuar</strong>.
+            </li>
+        </ol>
+    </div>
+
+    <div class="calc-box" style="text-align:center; border:1px dashed var(--primary); margin-top:15px;">
+        <label>Cuenta Zelle Oficial</label>
+
+        <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:10px;">
+            <span id="zelle-account" style="font-size:1.2rem; font-weight:800; color:white;">
+                pago@fastcuba.com
+            </span>
+
+            <button
+                type="button"
+                onclick="copiarZelle()"
+                style="background:var(--primary); border:none; border-radius:8px; color:white; padding:5px 10px; cursor:pointer; font-size:0.8rem;">
+                Copiar
+            </button>
+        </div>
+    </div>
+
+    <div class="nav-buttons" style="display:flex; gap:10px; margin-top:30px;">
+        <button type="button" class="btn btn-cancel" onclick="cerrarModal()">
+            Cerrar
+        </button>
+        <button type="button" class="btn btn-next" onclick="nextStep(1)">
+            Continuar
+        </button>
+    </div>
+</div>
 
             <!-- PASO 1: Datos del Remitente y Monto -->
             <div class="step" id="step-1">
