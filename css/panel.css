@@ -1,322 +1,446 @@
 /* =====================================================
-   VARIABLES BASE (MODO CLARO)
+   PANEL ADMIN – Overrides para alineación con plataforma principal
+   Usa variables de styles.css (--primary, --dark-bg, --glass-*, etc.)
    ===================================================== */
-:root {
-    /* Brand */
-    --primary: #1e293b;
-    --primary-dark: #0f172a;
 
-    /* Backgrounds */
-    --bg: #f1f5f9;
-    --surface: #ffffff;
-    --surface-muted: #f8fafc;
-
-    /* Text */
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --text-fixed: #000000; /* texto que NUNCA cambia */
-
-    /* Borders & effects */
-    --border: #e2e8f0;
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-
-    /* States */
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
+/* Header compacto (no hero full-height) */
+body .panel-header,
+body:has(.panel-header) header {
+  height: auto;
+  min-height: auto;
+  padding: 1.25rem 1.5rem;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background: var(--dark-bg);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* =====================================================
-   MODO OSCURO (solo override de variables)
-   ===================================================== */
-body.dark {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --surface-muted: #020617;
-
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-
-    --border: #334155;
-    --shadow: 0 10px 30px rgba(0,0,0,0.45);
+body header {
+  height: auto;
+  min-height: auto;
+  padding: 1.25rem 1.5rem;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background: var(--dark-bg);
+  background-image: none;
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* =====================================================
-   BASE
-   ===================================================== */
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text-main);
+body header::before {
+  display: none;
 }
 
-header {
-    background: var(--primary);
-    color: white;
-    padding: 1.5rem;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 800;
-    border-bottom: 4px solid var(--primary-dark);
+body header h1,
+body header p {
+  margin: 0;
+  text-shadow: none;
 }
 
-main {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: auto;
+body header .panel-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
 }
 
-/* =====================================================
-   LAYOUT / CARDS
-   ===================================================== */
+/* Main contenido */
+body main {
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Config container – tarjeta tipo glass como plataforma principal */
 .config-container {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .rate-card {
-    background: var(--surface);
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  background: var(--surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .rate-card h3 {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
+  margin: 0 0 0.35rem 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
 }
 
 .rate-card input {
-    padding: 8px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-weight: bold;
-    background: var(--bg);
-    color: var(--text-main);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  color: var(--text-main);
+  font-weight: 600;
+  min-width: 140px;
 }
 
+.rate-card input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+#update-timer {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Dashboard grid de cards */
 .dashboard {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
 }
 
-.card {
-    background: var(--surface);
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-    transition: 0.3s;
-    position: relative;
+.dashboard .card {
+  background: var(--surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+  cursor: pointer;
 }
 
-.card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--primary);
+.dashboard .card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 35px rgba(0, 169, 255, 0.15);
 }
 
-.card:hover {
-    transform: translateY(-3px);
-    border-color: var(--primary);
+.dashboard .card h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-/* =====================================================
-   MODALES
-   ===================================================== */
+.dashboard .card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Botón dark mode en header */
+#dark-mode-btn {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.6rem;
+  font-size: 1.1rem;
+}
+
+#dark-mode-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* Modales – mismo estilo glass que plataforma principal */
 .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    overflow-y: auto;
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 25, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  overflow-y: auto;
 }
 
-.modal-content {
-    background: var(--surface);
-    margin: 2% auto;
-    padding: 2rem;
-    border-radius: 1rem;
-    width: 90%;
-    max-width: 1100px;
-    animation: modalIn 0.3s;
+.modal .modal-content {
+  background: var(--surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin: 2% auto;
+  padding: 2rem;
+  width: 90%;
+  max-width: 1100px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  animation: panelModalIn 0.3s ease;
 }
 
-@keyframes modalIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes panelModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.close {
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--text-muted);
+.modal .modal-content h2 {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.35rem;
+  color: var(--text-main);
 }
 
-/* =====================================================
-   TABLAS (SIEMPRE LEGIBLES)
-   ===================================================== */
+.modal .close {
+  position: absolute;
+  right: 1.25rem;
+  top: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.modal .close:hover {
+  color: var(--text-main);
+}
+
+/* Tablas – legibles y alineadas */
 .table-container {
-    overflow-x: auto;
-    margin-top: 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
+  overflow-x: auto;
+  margin-top: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
 }
 
-/* Fondo SIEMPRE blanco */
-#tabla-transacciones table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
+#tabla-transacciones table,
+#tabla-conciliacion table,
+#tabla-logs table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.03);
 }
 
-/* Texto SIEMPRE negro */
 #tabla-transacciones th,
-#tabla-transacciones td {
-    color: var(--text-fixed);
-    padding: 12px;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
+#tabla-transacciones td,
+#tabla-conciliacion th,
+#tabla-conciliacion td,
+#tabla-logs th,
+#tabla-logs td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 0.9rem;
+  color: var(--text-main);
 }
 
-#tabla-transacciones th {
-    background: #f8fafc;
-    font-size: 0.75rem;
-    text-transform: uppercase;
+#tabla-transacciones th,
+#tabla-conciliacion th,
+#tabla-logs th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
 }
 
-/* Filas especiales */
+#tabla-transacciones th:hover,
+#tabla-conciliacion th:hover,
+#tabla-logs th:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#tabla-transacciones th.sort-asc::after,
+#tabla-conciliacion th.sort-asc::after,
+#tabla-logs th.sort-asc::after {
+  content: " ▲";
+  color: var(--primary);
+}
+
+#tabla-transacciones th.sort-desc::after,
+#tabla-conciliacion th.sort-desc::after,
+#tabla-logs th.sort-desc::after {
+  content: " ▼";
+  color: var(--primary);
+}
+
+#tabla-transacciones tbody tr:hover,
+#tabla-conciliacion tbody tr:hover,
+#tabla-logs tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .fila-pendiente {
-    background-color: rgb(255, 92, 69);
-    border-left: 4px solid var(--warning);
+  background: rgba(220, 53, 69, 0.15);
+  border-left: 4px solid var(--error);
 }
 
-/* =====================================================
-   BADGES / BOTONES
-   ===================================================== */
+/* Badges y botones */
 .badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
 }
 
-.badge-pendiente {
-    background: #fef3c7;
-    color: #92400e;
+.badge-pending {
+  background: rgba(245, 158, 11, 0.25);
+  color: #f59e0b;
 }
 
-.badge-confirmado {
-    background: #dcfce7;
-    color: #166534;
+.badge-approved {
+  background: rgba(40, 167, 69, 0.25);
+  color: var(--success);
+}
+
+.badge-rejected {
+  background: rgba(220, 53, 69, 0.25);
+  color: var(--error);
 }
 
 .btn-primary {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
 }
 
 .btn-danger {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
+  background: var(--error);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#tabla-transacciones .btn-ver {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--primary);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
 }
 
 #tabla-transacciones button:hover {
-    background: var(--primary) !important;
-    color: white !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
 }
 
-/* =====================================================
-   FILTROS Y PAGINACIÓN
-   ===================================================== */
+/* Filtros y paginación */
 .filter-bar {
-    display: flex;
-    gap: 10px;
-    background: var(--surface);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    margin-bottom: 15px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
 }
 
 .filter-bar input,
 .filter-bar select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text-main);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--dark-bg);
+  color: var(--text-main);
 }
 
 .pagination-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
 }
 
 .pagination-container button {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-main);
-    cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .pagination-container button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-/* =====================================================
-   IMÁGENES
-   ===================================================== */
+/* Métricas cards dentro del modal */
+.modal-metricas .card {
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.modal-metricas .card h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.modal-metricas .card p {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Conciliación inputs */
+#conc-confirmado,
+#conc-banco,
+#conc-obs {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  color: var(--text-main);
+}
+
+/* Imagen recibo en Swal */
 .img-recibo-modal {
-    max-width: 100%;
-    max-height: 80vh;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-.swal2-container {
-    z-index: 99999 !important;
-}
-
-/* Opcional: Estilo extra para que resalte más en el modo oscuro */
-body.dark .swal2-popup.swal2-toast {
-    background: #1e293b !important;
-    color: #ffffff !important;
-    border: 1px solid #334155;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
 }

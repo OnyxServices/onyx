@@ -1,220 +1,258 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onyx - Panel Administrativo</title>
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onyx Transfer | Panel Administrativo</title>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="./js/supabase.js"></script>
-    <link rel="stylesheet" type="text/css" href="./css/panel.css">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="./css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="./css/panel.css" />
+  </head>
+  <body>
+    <header class="panel-header">
+      <span class="panel-title">Onyx Transfer – Admin</span>
+      <button
+        onclick="toggleDarkMode()"
+        id="dark-mode-btn"
+        style="
+          position: absolute;
+          right: 20px;
+          top: 20px;
+          cursor: pointer;
+          background: none;
+          border: 1px solid white;
+          color: white;
+          border-radius: 5px;
+          padding: 5px;
+        "
+      >
+        🌙
+      </button>
+    </header>
 
-<header>
-    Onyx ADMIN
-    <button onclick="toggleDarkMode()" id="dark-mode-btn" style="position: absolute; right: 20px; top: 20px; cursor: pointer; background: none; border: 1px solid white; color: white; border-radius: 5px; padding: 5px;">🌙</button>
-</header>
-
-<main>
-    <!-- Configuración Rápida -->
-    <div class="config-container">
+    <main>
+      <!-- Configuración Rápida -->
+      <div class="config-container">
         <div class="rate-card">
-            <div>
-                <h3>Tasa CUP</h3>
-                <input type="number" id="tasa_cambio" step="0.1" style="width: 80px;">
-            </div>
-            <div style="border-left: 1px solid var(--border); padding-left: 15px;">
-                <h3>Cuenta Zelle</h3>
-                <input type="text" id="zelle_cuenta" placeholder="correo@zelle.com">
-            </div>
-            <button class="btn-primary" onclick="actualizarConfig()">Actualizar</button>
+          <div>
+            <h3>Tasa CUP</h3>
+            <input
+              type="number"
+              id="tasa_cambio"
+              step="0.1"
+              style="width: 80px"
+            />
+          </div>
+          <div style="border-left: 1px solid var(--border); padding-left: 15px">
+            <h3>Cuenta Zelle</h3>
+            <input
+              type="text"
+              id="zelle_cuenta"
+              placeholder="+1 234 567 8901 (solo número EE.UU.)"
+            />
+          </div>
+          <button class="btn-primary" onclick="actualizarConfig()">
+            Actualizar
+          </button>
         </div>
         <div id="update-timer">Actualizando en: 15s</div>
-    </div>
+      </div>
 
-    <!-- Dashboard -->
-    <div class="dashboard">
+      <!-- Dashboard -->
+      <div class="dashboard">
         <div class="card" onclick="abrirModal('modal-transacciones')">
-            <h3>💸 Transacciones</h3>
-            <p>Gestionar envíos y beneficiarios</p>
+          <h3>💸 Transacciones</h3>
+          <p>Gestionar envíos y beneficiarios</p>
         </div>
         <div class="card" onclick="abrirModal('modal-metricas')">
-            <h3>📊 Resumen Diario</h3>
-            <p>Ganancias y totales de hoy</p>
-        </div>
-        <div class="card" onclick="abrirModal('modal-comisiones')">
-            <h3>⚙️ Configuración</h3>
-            <p>Tramos de comisión</p>
+          <h3>📊 Resumen Diario</h3>
+          <p>Totales de hoy</p>
         </div>
         <div class="card" onclick="abrirModal('modal-conciliacion')">
-            <h3>⚖️ Conciliación</h3>
-            <p>Cierre de caja y bancos</p>
+          <h3>⚖️ Conciliación</h3>
+          <p>Cierre de caja y bancos</p>
         </div>
         <div class="card" onclick="abrirModal('modal-logs')">
-            <h3>📜 Auditoría</h3>
-            <p>Historial de acciones</p>
+          <h3>📜 Auditoría</h3>
+          <p>Historial de acciones</p>
         </div>
         <div class="card" onclick="exportarCSV()">
-            <h3>📥 Reporte CSV</h3>
-            <p>Descargar base de datos</p>
+          <h3>📥 Reporte CSV</h3>
+          <p>Descargar base de datos</p>
         </div>
-    </div>
-</main>
+      </div>
+    </main>
 
-<!--  modal-transacciones -->
-<div id="modal-transacciones" class="modal">
-    <!-- Dentro de modal-transacciones -->
-<div class="modal-content">
-    <span class="close" onclick="cerrarModal('modal-transacciones')">&times;</span>
-    
-    <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-        <h2>Gestión de Transacciones</h2>
-        <button class="btn-danger" onclick="borrarTodasTransacciones()">🗑️ Limpiar</button>
-    </div>
+    <!--  modal-transacciones -->
+    <div id="modal-transacciones" class="modal">
+      <!-- Dentro de modal-transacciones -->
+      <div class="modal-content">
+        <span class="close" onclick="cerrarModal('modal-transacciones')"
+          >&times;</span
+        >
 
-    <!-- BARRA DE FILTROS -->
-    <div class="filter-bar">
-        <input type="text" id="f-search" placeholder="🔍 Buscar nombre..." oninput="resetYPaginación()">
-        <select id="f-estado" onchange="resetYPaginación()">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+          "
+        >
+          <h2>Gestión de Transacciones</h2>
+          <button class="btn-danger" onclick="borrarTodasTransacciones()">
+            🗑️ Limpiar
+          </button>
+        </div>
+
+        <!-- BARRA DE FILTROS -->
+        <div class="filter-bar">
+          <input
+            type="text"
+            id="f-search"
+            placeholder="🔍 Buscar nombre..."
+            oninput="resetYPaginación()"
+          />
+          <select id="f-estado" onchange="resetYPaginación()">
             <option value="todos">Todos los estados</option>
-            <option value="pendiente">Pendientes</option>
-            <option value="confirmado">Confirmados</option>
-            <option value="rechazado">Rechazados</option>
-        </select>
-        <div style="display:flex; align-items:center; gap:5px;">
-            <input type="date" id="f-inicio" onchange="resetYPaginación()">
+            <option value="pending">Pendientes</option>
+            <option value="approved">Confirmados</option>
+            <option value="rejected">Rechazados</option>
+          </select>
+          <div style="display: flex; align-items: center; gap: 5px">
+            <input type="date" id="f-inicio" onchange="resetYPaginación()" />
             <span>a</span>
-            <input type="date" id="f-fin" onchange="resetYPaginación()">
+            <input type="date" id="f-fin" onchange="resetYPaginación()" />
+          </div>
         </div>
-    </div>
 
-    <div class="table-container">
-        <!-- Busca esta parte en tu panel.html -->
-        <table id="tabla-transacciones">
+        <div class="table-container">
+          <table id="tabla-transacciones">
             <thead>
-                <tr>
-                    <th>Remitente</th>
-                    <th>WhatsApp Rem.</th> <!-- 1. Nueva columna añadida -->
-                    <th>Beneficiario</th>
-                    <th>WhatsApp Ben.</th>
-                    <th>USD</th>
-                    <th>CUP</th>
-                    <th>Recibo</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
+              <tr>
+                <th onclick="setSort('sender')" id="th-sender">Remitente</th>
+                <th onclick="setSort('recipient')" id="th-recipient">
+                  Beneficiario
+                </th>
+                <th onclick="setSort('whatsapp')" id="th-whatsapp">WhatsApp</th>
+                <th onclick="setSort('usd')" id="th-usd">USD</th>
+                <th onclick="setSort('cup')" id="th-cup">CUP</th>
+                <th>Recibo</th>
+                <th onclick="setSort('state')" id="th-state">Estado</th>
+                <th>Acción</th>
+              </tr>
             </thead>
             <tbody></tbody>
-</table>
+          </table>
+        </div>
+
+        <!-- CONTROLES DE PAGINACIÓN -->
+        <div class="pagination-container">
+          <button onclick="cambiarPagina(-1)" id="btn-prev">Anterior</button>
+          <span id="page-info">Página 1</span>
+          <button onclick="cambiarPagina(1)" id="btn-next">Siguiente</button>
+        </div>
+      </div>
     </div>
 
-    <!-- CONTROLES DE PAGINACIÓN -->
-    <div class="pagination-container">
-        <button onclick="cambiarPagina(-1)" id="btn-prev">Anterior</button>
-        <span id="page-info">Página 1</span>
-        <button onclick="cambiarPagina(1)" id="btn-next">Siguiente</button>
-    </div>
-</div>
-</div>
-
-<!-- Modal Métricas Actualizado -->
-<div id="modal-metricas" class="modal">
-    <div class="modal-content" style="max-width: 800px;">
-        <span class="close" onclick="cerrarModal('modal-metricas')">&times;</span>
+    <!-- Modal Métricas -->
+    <div id="modal-metricas" class="modal">
+      <div class="modal-content" style="max-width: 800px">
+        <span class="close" onclick="cerrarModal('modal-metricas')"
+          >&times;</span
+        >
         <h2>Resumen Operativo (Hoy)</h2>
-        
-        <!-- Tablero de Métricas -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
-            <div class="card">
-                <h4>Entrada Bruta (USD)</h4>
-                <p id="m-entrada-bruta" style="font-weight: bold;">$0.00</p>
-                <small style="color:var(--text-muted)">Total recibido del cliente</small>
-            </div>
-            <div class="card" style="border-left: 4px solid var(--danger);">
-                <h4>Costo Operativo</h4>
-                <p id="m-costo-total" style="color:var(--danger)">$0.00</p>
-                <small style="color:var(--text-muted)">Pago a logística en Cuba</small>
-            </div>
-            <div class="card" style="border-left: 4px solid var(--success);">
-                <h4>Utilidad Real</h4>
-                <p id="m-utilidad-neta" style="color:var(--success); font-size: 1.5rem; font-weight: 800;">$0.00</p>
-                <small style="color:var(--text-muted)">Ganancia neta final</small>
-            </div>
+        <div
+          class="modal-metricas"
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+          "
+        >
+          <div class="card">
+            <h4>Cant.</h4>
+            <p id="m-cantidad">0</p>
+          </div>
+          <div class="card">
+            <h4>USD Total</h4>
+            <p id="m-usd-recibido">$0.00</p>
+          </div>
+          <div class="card">
+            <h4>CUP Total</h4>
+            <p id="m-cup-entregado">0 CUP</p>
+          </div>
         </div>
-
-        <!-- Ajustes de Cálculo (Inputs interactivos) -->
-        <div style="background: var(--bg); padding: 15px; border-radius: 10px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-            <div style="display: flex; flex-direction: column;">
-                <label style="font-size: 0.8rem; margin-bottom: 5px;">Costo por envío (USD fijo):</label>
-                <input type="number" id="cfg-costo-fijo" value="1.00" step="0.5" oninput="calcularUtilidadReal()" style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid var(--border);">
-            </div>
-            <div style="display: flex; flex-direction: column;">
-                <label style="font-size: 0.8rem; margin-bottom: 5px;">Comisión Pagador (%):</label>
-                <input type="number" id="cfg-costo-porcentaje" value="1.0" step="0.1" oninput="calcularUtilidadReal()" style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid var(--border);">
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 250px;">
-                * El costo operativo se calcula sumando el costo fijo por cada transacción más el porcentaje sobre el monto enviado.
-            </p>
-        </div>
-
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
-        
-        <div style="display: flex; justify-content: space-between;">
-            <p>Transacciones confirmadas hoy: <b id="m-cantidad">0</b></p>
-            <p>CUP entregado: <b id="m-cup-entregado">0 CUP</b></p>
-        </div>
+      </div>
     </div>
-</div>
 
-<!-- Modal Comisiones -->
-<div id="modal-comisiones" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-        <span class="close" onclick="cerrarModal('modal-comisiones')">&times;</span>
-        <h2>Configuración de Comisiones</h2>
-        <div class="table-container">
-            <table>
-                <thead><tr><th>Min</th><th>Max</th><th>Comisión</th><th>Acción</th></tr></thead>
-                <tbody id="cuerpo-comisiones"></tbody>
-            </table>
-        </div>
-        <button class="btn-primary" style="width:100%; margin-top:15px;" onclick="agregarFilaComision()">+ Nuevo Tramo</button>
-    </div>
-</div>
-
-<!-- Modal Conciliación -->
-<div id="modal-conciliacion" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="cerrarModal('modal-conciliacion')">&times;</span>
+    <!-- Modal Conciliación -->
+    <div id="modal-conciliacion" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="cerrarModal('modal-conciliacion')"
+          >&times;</span
+        >
         <h2>Conciliación Diaria</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="number" id="conc-confirmado" readonly placeholder="Sistema">
-            <input type="number" id="conc-banco" placeholder="Monto en Banco">
-            <input type="text" id="conc-obs" placeholder="Notas...">
-            <button class="btn-primary" onclick="guardarConciliacion()">Cerrar Día</button>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px">
+          <input
+            type="number"
+            id="conc-confirmado"
+            readonly
+            placeholder="Sistema"
+          />
+          <input type="number" id="conc-banco" placeholder="Monto en Banco" />
+          <input type="text" id="conc-obs" placeholder="Notas..." />
+          <button class="btn-primary" onclick="guardarConciliacion()">
+            Cerrar Día
+          </button>
         </div>
         <div class="table-container">
-            <table id="tabla-conciliacion">
-                <thead><tr><th>Fecha</th><th>Sistema</th><th>Banco</th><th>Dif.</th><th>Obs.</th></tr></thead>
-                <tbody id="cuerpo-conciliacion"></tbody>
-            </table>
+          <table id="tabla-conciliacion">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Sistema</th>
+                <th>Banco</th>
+                <th>Dif.</th>
+                <th>Obs.</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-conciliacion"></tbody>
+          </table>
         </div>
+      </div>
     </div>
-</div>
 
-<!-- Modal Logs -->
-<div id="modal-logs" class="modal">
-    <div class="modal-content">
+    <!-- Modal Logs -->
+    <div id="modal-logs" class="modal">
+      <div class="modal-content">
         <span class="close" onclick="cerrarModal('modal-logs')">&times;</span>
         <h2>Historial de Auditoría</h2>
-        <div class="table-container"><table id="tabla-logs">
-            <thead><tr><th>Fecha</th><th>TX</th><th>Acción</th><th>Admin</th><th>Comentario</th></tr></thead>
+        <div class="table-container">
+          <table id="tabla-logs">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>TX</th>
+                <th>Acción</th>
+                <th>Admin</th>
+                <th>Comentario</th>
+              </tr>
+            </thead>
             <tbody id="cuerpo-logs"></tbody>
-        </table></div>
+          </table>
+        </div>
+      </div>
     </div>
-</div>
 
-<script src="./js/panel.js"></script>
-</body>
+    <script type="module" src="./js/panelMain.js"></script>
+  </body>
 </html>

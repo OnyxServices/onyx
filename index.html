@@ -1,254 +1,348 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onyx - Money Transfer</title>
-    <link rel="icon" href="data:,">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="./css/index.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onyx Transfer | Remesas a Cuba</title>
+    <link rel="icon" href="data:," />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="./js/supabase.js"></script>
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="./css/styles.css" />
+  </head>
 
+  <body>
     <!-- Pantalla de Carga Profesional -->
-<div id="loader-wrapper">
-    <div class="loader-content">
+    <div id="loader-wrapper">
+      <div class="loader-content">
         <div class="loader-brand">
-            <h2>Onyx</h2>
-            <p>Premium Transfer</p>
+          <h2>Onyx Transfer</h2>
         </div>
 
         <div class="loader-info-box">
-            <span id="loader-status-text">Estableciendo conexión segura...</span>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="main-progress-bar"></div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="progress-percentage" id="progress-percent">0%</span>
-                <span style="font-size: 10px; color: var(--text-secondary); text-transform: uppercase;">AES-256 Encryption</span>
-            </div>
+          <span id="loader-status-text">Estableciendo conexión segura...</span>
 
-            <div class="loader-tips">
-                <div class="tip-item active">Verificando tasas de cambio en tiempo real...</div>
-                <div class="tip-item">Tus transferencias por Zelle están protegidas.</div>
-                <div class="tip-item">Soporte técnico activo 24/7.</div>
-                <div class="tip-item">Más de 5,000 envíos exitosos este mes.</div>
-            </div>
+          <div class="progress-container">
+            <div class="progress-bar" id="main-progress-bar"></div>
+          </div>
+
+          <div class="flex-between">
+            <span class="progress-percentage" id="progress-percent">0%</span>
+            <span class="text-small-uppercase">AES-256 Encryption</span>
+          </div>
+
+          <div class="loader-tips">
+            <p class="tip-item active">
+              Verificando tasas de cambio en tiempo real...
+            </p>
+            <p class="tip-item">
+              Sus transferencias por Zelle están protegidas
+            </p>
+            <p class="tip-item">Soporte técnico activo 24/7</p>
+            <p class="tip-item">Más de 5,000 envíos realizados este mes</p>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<header>
-    <h1>Onyx</h1>
-    <p>Envia dinero a tus familiares en Cuba de la forma mas rapida.</p>
+    <header>
+      <h1>Onyx Transfer</h1>
+      <p>
+        Envie dinero a sus familiares en Cuba de la forma más rápida y segura
+      </p>
 
-    <!-- Insertar dentro del <header> después de los <p> -->
-<div class="hero-calculator">
-    <div class="calc-card">
-        <div class="calc-input-row">
+      <div class="hero-calculator">
+        <div class="calc-card">
+          <div class="calc-input-row">
             <div class="input-field">
-                <label>Tú envías (USD)</label>
-                <input type="number" id="home-monto-usd" placeholder="100" min="50">
+              <label>Monto a enviar (USD)</label>
+              <input
+                type="number"
+                id="home-usd-amount"
+                placeholder="Mínimo $50"
+                min="50"
+              />
             </div>
             <div class="swap-icon">➔</div>
             <div class="input-field">
-                <label>Reciben en Cuba (CUP)</label>
-                <input type="text" id="home-monto-cup" readonly placeholder="0.00">
+              <label>Monto recibido (CUP)</label>
+              <input
+                type="text"
+                id="home-cup-amount"
+                readonly
+                placeholder="0.00"
+              />
             </div>
+          </div>
+          <div class="exchange-rate-row" aria-label="Tasa de cambio actual">
+            <span class="exchange-rate-label">Tasa de cambio:</span>
+            <span class="exchange-rate-value" id="home-value-rate">...</span>
+          </div>
         </div>
+      </div>
+    </header>
 
-        <div class="calc-details">
-            <div class="detail-item">
-                <span>Tasa de cambio:</span>
-                <strong id="home-tasa-val">...</strong>
-            </div>
-            <div class="detail-item">
-                <span>Comisión Zelle:</span>
-                <strong id="home-comision-val">$0.00</strong>
-            </div>
-            <div class="detail-item total">
-                <span>Total a pagar:</span>
-                <strong id="home-total-pagar">$0.00</strong>
-            </div>
-        </div>
+    <!-- Botón Flotante de Rastreo-->
+    <div
+      class="fab"
+      id="tracking-fab"
+      onclick="abrirModalTracking()"
+      title="Rastrear Envío"
+    >
+      <span>🔍</span>
     </div>
-</div>
-</header>
 
-<!-- Botón Flotante de Rastreo-->
-<div class="fab" id="tracking-fab" onclick="abrirModalTracking()" title="Rastrear Envío" style="bottom: 105px; background: #6c757d; font-size: 24px;">
-    <span>🔍</span>
-</div>
-
-<!-- Botón Flotante con Burbuja -->
-<div class="fab" id="main-fab" onclick="abrirModal()" title="Nuevo Envío">
-    <!-- Nueva burbuja de notificación -->
-    <div class="fab-badge-notification" id="fab-notification">
-        Presiona aquí para iniciar tu transacción
+    <!-- Botón Flotante con Burbuja -->
+    <div class="fab" id="main-fab" onclick="abrirModal()" title="Nuevo Envío">
+      <!-- Nueva burbuja de notificación -->
+      <div class="fab-badge-notification" id="fab-notification">
+        Presione aquí para iniciar tu transacción
+      </div>
+      <span>+</span>
     </div>
-    <span>+</span>
-</div>
 
-<!-- Modal de Rastreo -->
-<div class="modal-overlay" id="modalTracking">
-    <div class="modal-content">
-        <h2 style="margin-top:0; font-weight: 700;">Rastrear mi Envío</h2>
-        <p style="font-size:0.9rem; color: var(--text-secondary);">Ingresa tu número de WhatsApp para ver el estado de tus transferencias recientes.</p>
-        
+    <!-- Modal de Rastreo -->
+    <div class="modal-overlay" id="modalTracking">
+      <div class="modal-content">
+        <h2>Rastrear mi Envío</h2>
+        <p>
+          Ingresa tu número de WhatsApp para ver el estado de sus transferencias
+          recientes
+        </p>
+
         <div class="input-group">
-            <label>Número de WhatsApp</label>
-            <input type="text" id="search-input" placeholder="Ej: +1 123 456 7890">
+          <label>Número de WhatsApp</label>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Ej: +1 123 456 7890"
+          />
         </div>
-        
-        <button type="button" class="btn btn-next" style="width:100%;" onclick="buscarTransaccion()">Buscar Ahora</button>
-        
+
+        <button
+          type="button"
+          class="btn btn-next btn-block"
+          onclick="buscarTransaccion()"
+        >
+          Buscar ahora
+        </button>
+
         <!-- Contenedor de Resultados -->
-        <div id="tracking-results" style="margin-top: 25px; display: none;">
-            <!-- Aquí se inyectarán las tarjetas de resultados -->
+        <div id="tracking-results">
+          <!-- Aquí se inyectarán las tarjetas de resultados -->
         </div>
 
-        <button type="button" class="btn btn-cancel" style="width:100%; margin-top: 15px;" onclick="cerrarModalTracking()">Cerrar</button>
-    </div>
-</div>
-
-
-<!-- Modal -->
-<div class="modal-overlay" id="modalTransferencia">
-    <div class="modal-content">
-        
-        <form id="form-transaccion">
-            <!-- PASO 0: Información de Pago (NUEVO) -->
-            <div class="step active" id="step-0">
-    <h2 style="margin-top:0; font-weight:700;">
-        Información de Pago
-    </h2>
-
-    <div style="font-size:0.9rem; color:var(--text-secondary); line-height:1.4;">
-        <p>Para procesar tu envío, sigue estos pasos:</p>
-
-        <ol style="padding-left:1.2rem; margin:0.5rem 0 0 0;">
-            <li>
-                Primero debes realizar la transferencia por <strong>Zelle</strong> a la siguiente cuenta.
-            </li>
-            <li>
-                Toma una captura de la confirmación de la transferencia.
-            </li>
-            <li>
-                Si ya realizaste la transferencia y tienes la captura, presiona <strong>Continuar</strong>.
-            </li>
-        </ol>
+        <button
+          type="button"
+          class="btn btn-prev btn-block btn-spaced"
+          onclick="cerrarModalTracking()"
+        >
+          Cerrar
+        </button>
+      </div>
     </div>
 
-    <div class="calc-box" style="text-align:center; border:1px dashed var(--primary); margin-top:15px;">
-        <label>Cuenta Zelle Oficial</label>
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalTransferencia">
+      <div class="modal-content">
+        <form id="transaction-form">
+          <!-- PASO 0: Información de Pago (NUEVO) -->
+          <div class="step active" id="step-0">
+            <h2>Información de pago</h2>
+            <p>Para procesar su envío siga estos pasos:</p>
+            <ul>
+              <li>
+                1. Realice la transferencia vía Zelle a la cuenta que se muestra
+                a continuación.
+              </li>
+              <ul>
+                <li>1.1. Copie la dirección de la cuenta Zelle de Onyx.</li>
+                <li>1.2. Proceda con el pago.</li>
+              </ul>
+              <li>
+                2. Adjunte una captura de pantalla de su transferencia via
+                Zelle.
+              </li>
+              <ul>
+                <li>
+                  2.1. Realice una captura de pantalla de su transferencia via
+                  Zelle.
+                </li>
+              </ul>
+              <li>
+                3. Si ya realizo la transferencia e hizo la captura de pantalla,
+                presione Continuar.
+              </li>
+            </ul>
 
-        <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:10px;">
-            <span id="zelle-account" style="font-size:1.2rem; font-weight:800; color:white;">
-                pago@Onyx.com
-            </span>
+            <div class="calc-box zelle-box">
+              <label>Cuenta Zelle</label>
+              <div class="zelle-box-content">
+                <span id="zelle-account" class="zelle-account"
+                  >pago@fastcuba.com</span
+                >
+                <button
+                  type="button"
+                  class="btn btn-next btn-small"
+                  onclick="copiarZelle()"
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
 
-            <button
+            <div class="nav-buttons">
+              <button
                 type="button"
-                onclick="copiarZelle()"
-                style="background:var(--primary); border:none; border-radius:8px; color:white; padding:5px 10px; cursor:pointer; font-size:0.8rem;">
-                Copiar
-            </button>
-        </div>
-    </div>
+                class="btn btn-prev"
+                onclick="cerrarModal()"
+              >
+                Cerrar
+              </button>
+              <button type="button" class="btn btn-next" onclick="nextStep(1)">
+                Pago realizado, continuar
+              </button>
+            </div>
+          </div>
 
-    <div class="nav-buttons" style="display:flex; gap:10px; margin-top:30px;">
-        <button type="button" class="btn btn-cancel" onclick="cerrarModal()">
-            Cerrar
-        </button>
-        <button type="button" class="btn btn-next" onclick="nextStep(1)">
-            Continuar
-        </button>
-    </div>
-</div>
-
-            <!-- PASO 1: Datos del Remitente y Monto -->
-            <div class="step" id="step-1">
-                <h2 style="margin-top:0; font-weight: 700;">Monto y Remitente</h2>
-                <div class="input-group">
-                    <label for="monto_usd">Monto a enviar (USD)</label>
-                    <input type="number" id="monto_usd" min="50" placeholder="Mínimo $50.00" required>
-                </div>
-
-                <div class="calc-box">
-                    <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:10px;">
-                        <span style="color: var(--text-secondary);">Beneficiario recibe:</span>
-                        <strong style="color:var(--success); font-size: 1.2rem;" id="total_cup">0.00 CUP</strong>
-                    </div>
-                    <hr style="border: none; height: 1px; background: var(--glass-border); margin: 10px 0;">
-                    <div style="display:flex; justify-content:space-between; align-items: center; font-size: 0.9rem; opacity: 0.9;">
-                        <span>Total pagado (Zelle):</span>
-                        <span id="total_usd" style="font-weight: 600;">$0.00</span>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="remitente_nombre">Tu Nombre Completo</label>
-                    <input type="text" id="remitente_nombre" placeholder="Ej: Juan Pérez" required>
-                </div>
-                <div class="input-group">
-                    <label for="remitente_whatsapp">Tu WhatsApp</label>
-                    <input type="text" id="remitente_whatsapp" placeholder="Ej: +1 123..." required>
-                </div>
-
-                <div class="nav-buttons" style="display:flex; gap:10px; margin-top: 30px;">
-                    <button type="button" class="btn btn-prev" onclick="nextStep(0)">Atrás</button>
-                    <button type="button" class="btn btn-next" onclick="nextStep(2)">Continuar</button>
-                </div>
+          <!-- PASO 1: Datos del Remitente y Monto -->
+          <div class="step" id="step-1">
+            <h2>Remitente</h2>
+            <div class="input-group">
+              <label for="usd-amount">Monto a enviar (USD)</label>
+              <input
+                type="number"
+                id="usd-amount"
+                min="50"
+                placeholder="Mínimo $50"
+                required
+              />
             </div>
 
-            <!-- PASO 2: Datos del Beneficiario -->
-            <div class="step" id="step-2">
-                <h2 style="margin-top:0; font-weight: 700;">Datos del Destinatario</h2>
-                <div class="input-group">
-                    <label for="beneficiario_nombre">Nombre del Beneficiario</label>
-                    <input type="text" id="beneficiario_nombre" required>
-                </div>
-                <div class="input-group">
-                    <label for="beneficiario_provincia">Provincia</label>
-                    <input type="text" id="beneficiario_provincia" required>
-                </div>
-                <div class="input-group">
-                    <label for="beneficiario_whatsapp">WhatsApp (Opcional)</label>
-                    <input type="text" id="beneficiario_whatsapp">
-                </div>
-                <div class="nav-buttons" style="display:flex; gap:10px; margin-top: 30px;">
-                    <button type="button" class="btn btn-prev" onclick="nextStep(1)">Atrás</button>
-                    <button type="button" class="btn btn-next" onclick="nextStep(3)">Siguiente</button>
-                </div>
+            <div class="calc-box">
+              <div class="calc-box-row">
+                <span class="text-muted">Monto recibido (CUP):</span>
+                <strong class="text-success-amount" id="cup-total"
+                  >0.00 CUP</strong
+                >
+              </div>
+              <hr class="divider" />
             </div>
 
-            <!-- PASO 3: Comprobante -->
-          <!-- Busca el Paso 3 en tu index.html y cambia el botón -->
-<div class="step" id="step-3">
-    <h2 style="margin-top:0; font-weight: 700;">Comprobante de Pago</h2>
-    <p style="font-size:0.9rem; opacity:0.8; line-height: 1.5;">Sube una captura de pantalla de tu transferencia Zelle.</p>
-    <div class="input-group" style="margin-top: 25px;">
-        <label for="comprobante">Archivo de Imagen</label>
-        <input type="file" id="comprobante" accept="image/*" required>
-    </div>
-    <div class="nav-buttons" style="display:flex; gap:10px; margin-top: 30px;">
-        <button type="button" class="btn btn-prev" onclick="nextStep(2)">Atrás</button>
-        
-        <!-- CAMBIA ESTA LÍNEA: de type="submit" a type="button" y agrega el onclick -->
-        <button type="button" id="btn-enviar" class="btn btn-next" onclick="procesarEnvioFinal()">Finalizar Envío</button>
-    </div>
-</div>
+            <div class="input-group">
+              <label for="sender-name">Nombre y apellidos*</label>
+              <input
+                type="text"
+                id="sender-name"
+                placeholder="Ej: Juan Pérez"
+                maxlength="100"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <label for="sender-whatsapp">Número de WhatsApp*</label>
+              <input
+                type="text"
+                id="sender-whatsapp"
+                placeholder="Ej: +1 (123) 456 8901 o +53 5 123 4567"
+                required
+              />
+            </div>
+
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-prev" onclick="nextStep(0)">
+                Atrás
+              </button>
+              <button type="button" class="btn btn-next" onclick="nextStep(2)">
+                Continuar
+              </button>
+            </div>
+          </div>
+
+          <!-- PASO 2: Datos del Destinatario -->
+          <div class="step" id="step-2">
+            <h2>Destinatario</h2>
+            <div class="input-group">
+              <label for="beneficiario_nombre">Nombre y apellidos*</label>
+              <input
+                type="text"
+                id="recipient-name"
+                maxlength="100"
+                required
+                placeholder="Ej: Juan Pérez"
+              />
+            </div>
+            <div class="input-group">
+              <label for="recipient-province">Provincia*</label>
+              <input type="hidden" id="recipient-province" required />
+              <div
+                class="custom-select"
+                id="recipient-province-select"
+                data-placeholder="Seleccione provincia"
+              ></div>
+            </div>
+            <div class="input-group">
+              <label for="recipient-municipality">Municipio*</label>
+              <input type="hidden" id="recipient-municipality" required />
+              <div
+                class="custom-select"
+                id="recipient-municipality-select"
+                data-placeholder="Seleccione municipio"
+              ></div>
+            </div>
+            <div class="input-group">
+              <label for="recipient-whatsapp">Número de WhatsApp*</label>
+              <input
+                type="text"
+                id="recipient-whatsapp"
+                placeholder="Ej: +1 (123) 456 8901 o +53 5 123 4567"
+                required
+              />
+            </div>
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-prev" onclick="nextStep(1)">
+                Atrás
+              </button>
+              <button type="button" class="btn btn-next" onclick="nextStep(3)">
+                Siguiente
+              </button>
+            </div>
+          </div>
+
+          <!-- PASO 3: Comprobante de pago-->
+          <div class="step" id="step-3">
+            <h2>Comprobante de pago</h2>
+            <p>Adjunte una captura de pantalla de su transferencia via Zelle</p>
+            <div class="input-group mt-25">
+              <label for="bank-transfer-proof">Captura de pantalla*</label>
+              <input
+                type="file"
+                id="bank-transfer-proof"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                required
+              />
+            </div>
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-prev" onclick="nextStep(2)">
+                Atrás
+              </button>
+              <button
+                type="button"
+                id="btn-submit"
+                class="btn btn-next"
+                onclick="procesarEnvioFinal()"
+              >
+                Finalizar envío
+              </button>
+            </div>
+          </div>
         </form>
+      </div>
     </div>
-</div>
 
-
-<script src="./js/index.js"></script>
-
-</body>
+    <script type="module" src="./js/main.js"></script>
+  </body>
 </html>
