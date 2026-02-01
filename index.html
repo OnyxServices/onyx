@@ -23,6 +23,7 @@
 </script>
   </head>
 
+
   <body>
     <!-- Pantalla de Carga Profesional -->
     <div id="loader-wrapper">
@@ -58,6 +59,11 @@
     </div>
 
     <header>
+           <!-- Indicador de Horario -->
+        <div id="business-status" class="business-status">
+        <span class="status-dot"></span>
+        <span id="status-text">Cargando...</span>
+        </div>
       <h1>Onyx Transfer</h1>
       <p>
         Envie dinero a sus familiares en Cuba de la forma más rápida y segura
@@ -351,7 +357,7 @@
         </form>
       </div>
     </div>
-
+    <script src="./js/horario.js"></script>
     <script type="module" src="./js/main.js"></script>
   </body>
 </html>

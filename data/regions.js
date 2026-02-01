@@ -1,4 +1,4 @@
-/** Regiones y municipios de Cuba (export ES6) */
+/* Regiones y municipios de Cuba (export ES6) */
 
 export const CUBA_REGIONS = [
   { province: "Pinar del Río", municipalities: ["Consolación del Sur", "Guane", "La Palma", "Los Palacios", "Mantua", "Minas de Matahambre", "Pinar del Río", "San Juan y Martínez", "San Luis", "Sandino", "Viñales"] },

@@ -135,6 +135,18 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLocationSelectors();
 });
 
+/**
+ * LÓGICA DE HORARIO DE ATENCIÓN
+ */
+
+
+// Ejecutar al cargar la página
+actualizarEstadoHorario();
+
+// Opcional: Revisar cada minuto para cambiar el estado automáticamente 
+// sin que el usuario refresque la página
+setInterval(actualizarEstadoHorario, 60000);
+
 // Exponer para onclick en HTML (compatibilidad)
 window.procesarEnvioFinal = procesarEnvioFinal;
 window.copiarZelle = copiarZelle;
