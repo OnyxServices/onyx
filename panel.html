@@ -136,20 +136,22 @@
 
         <div class="table-container">
           <table id="tabla-transacciones">
-            <thead>
-              <tr>
-                <th onclick="setSort('sender')" id="th-sender">Remitente</th>
-                <th onclick="setSort('recipient')" id="th-recipient">
-                  Beneficiario
-                </th>
-                <th onclick="setSort('whatsapp')" id="th-whatsapp">WhatsApp</th>
-                <th onclick="setSort('usd')" id="th-usd">USD</th>
-                <th onclick="setSort('cup')" id="th-cup">CUP</th>
-                <th>Recibo</th>
-                <th onclick="setSort('state')" id="th-state">Estado</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
+
+            <!-- En panel.html -->
+              <thead>
+                  <tr>
+                    <th onclick="setSort('creation_date')">Fecha</th>
+                    <th>Remitente</th> <!-- Nombre y WhatsApp -->
+                    <th>Destinatario</th> <!-- Nombre, WhatsApp, Prov, Mun -->
+                    <th onclick="setSort('usd')">USD</th>
+                    <th>Tasa</th>
+                    <th onclick="setSort('cup')">CUP</th>
+                    <th>Recibo</th>
+                    <th onclick="setSort('state')">Estado</th>
+                    <th>Acción</th>
+                    <th>Ticket</th> <!-- Nueva columna para imprimir -->
+                  </tr>
+              </thead>
             <tbody></tbody>
           </table>
         </div>
