@@ -444,3 +444,19 @@ body main {
   object-fit: contain;
   border-radius: var(--radius-sm);
 }
+
+/* En panel.css */
+.table-container {
+  overflow-x: auto; /* Permite scroll si la info es mucha */
+  white-space: nowrap; /* Evita que los nombres se corten en varias líneas si prefieres */
+}
+
+#tabla-transacciones td {
+    vertical-align: middle;
+    line-height: 1.2;
+}
+
+#tabla-transacciones small {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
