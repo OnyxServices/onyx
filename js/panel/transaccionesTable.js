@@ -123,42 +123,63 @@ export async function cargarTransaccionesPaginadas(refreshAll) {
   if (!tbody) return;
 
   tbody.innerHTML = (sortedTxs || [])
-    .map((tx) => {
-      const cup = (tx.usd_amount * (tx.exchange_rate || tasa)).toLocaleString(
-        "es-CU",
-      );
-      const waLink = tx.recipient_whatsapp
-        ? tx.recipient_whatsapp.replace(/\D/g, "")
-        : "";
-      const province = tx.recipient_province || "";
+  .map((tx) => {
+    const tasaTx = tx.exchange_rate || tasa;
+    const cup = (tx.usd_amount * tasaTx).toLocaleString("es-CU");
+    const fecha = new Date(tx.creation_date).toLocaleString('es-ES', { 
+        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+    });
 
-      return `
-        <tr class="${tx.state === "pending" ? "fila-pendiente" : ""}">
-          <td>${tx.sender_name}</td>
-          <td><b>${tx.recipient_name}</b><br><small>${province}</small></td>
-          <td>
-            <a href="https://wa.me/${waLink}" target="_blank" style="text-decoration:none; color:#25D366; font-weight:bold;">
-              📱 ${tx.recipient_whatsapp || "-"}
-            </a>
-          </td>
-          <td>$${tx.usd_amount}</td>
-          <td style="color:green; font-weight:bold">${cup} CUP</td>
-          <td><button onclick="window.verRecibo('${tx.transfer_proof_url || ""}')" class="btn-ver">👁️ Ver</button></td>
-          <td><span class="badge badge-${tx.state}">${(tx.state || "").toUpperCase()}</span></td>
-          <td>
-            ${
-              tx.state === "pending"
-                ? `
-              <button onclick="window.cambiarEstado(${tx.id}, 'approved')">✅</button>
-              <button onclick="window.cambiarEstado(${tx.id}, 'rejected')">❌</button>
-            `
-                : "---"
-            }
-          </td>
-        </tr>
-      `;
-    })
-    .join("");
+    // Enlaces de WhatsApp
+    const waRemitente = tx.sender_whatsapp ? tx.sender_whatsapp.replace(/\D/g, "") : "";
+    const waDestinatario = tx.recipient_whatsapp ? tx.recipient_whatsapp.replace(/\D/g, "") : "";
+
+    return `
+      <tr class="${tx.state === "pending" ? "fila-pendiente" : ""}">
+        <td><small>${fecha}</small></td>
+        
+        <!-- INFO REMITENTE -->
+        <td>
+          <b>${tx.sender_name}</b><br>
+          <a href="https://wa.me/${waRemitente}" target="_blank" style="text-decoration:none; color:#3b82f6; font-size:0.8rem;">
+            📱 ${tx.sender_whatsapp || "-"}
+          </a>
+        </td>
+
+        <!-- INFO DESTINATARIO COMPLETA -->
+        <td>
+          <b>${tx.recipient_name}</b><br>
+          <small>${tx.recipient_province}, ${tx.recipient_municipality}</small><br>
+          <a href="https://wa.me/${waDestinatario}" target="_blank" style="text-decoration:none; color:#25D366; font-size:0.8rem;">
+            📱 ${tx.recipient_whatsapp || "-"}
+          </a>
+        </td>
+
+        <td>$${tx.usd_amount}</td>
+        <td><small>x${tasaTx}</small></td>
+        <td style="color:green; font-weight:bold">${cup} CUP</td>
+        
+        <td><button onclick="window.verRecibo('${tx.transfer_proof_url || ""}')" class="btn-ver">👁️</button></td>
+        
+        <td><span class="badge badge-${tx.state}">${(tx.state || "").toUpperCase()}</span></td>
+        
+        <td>
+          ${tx.state === "pending" ? `
+            <button onclick="window.cambiarEstado(${tx.id}, 'approved')" style="border:none; background:none; cursor:pointer;">✅</button>
+            <button onclick="window.cambiarEstado(${tx.id}, 'rejected')" style="border:none; background:none; cursor:pointer;">❌</button>
+          ` : "---"}
+        </td>
+
+        <!-- BOTÓN IMPRIMIR TICKET -->
+        <td>
+          <button onclick='window.imprimirTicket(${JSON.stringify(tx)})' class="btn-ver" style="background: var(--primary); color: white;">
+            🖨️
+          </button>
+        </td>
+      </tr>
+    `;
+  })
+  .join("");
 
   // Actualizar clases de sort en headers
   const ths = document.querySelectorAll("#tabla-transacciones th");
@@ -238,3 +259,76 @@ export async function exportarCSV() {
   link.download = "reporte.csv";
   link.click();
 }
+
+export function imprimirTicket(tx) {
+  const tasaUsada = tx.exchange_rate || 0;
+  const cupTotal = (tx.usd_amount * tasaUsada).toLocaleString("es-CU");
+  const fecha = new Date(tx.creation_date).toLocaleString();
+
+  const ventanaPrensa = window.open('', '', 'width=600,height=800');
+  
+  ventanaPrensa.document.write(`
+    <html>
+      <head>
+        <title>Ticket Onyx - ${tx.id}</title>
+        <style>
+          body { font-family: 'Courier New', Courier, monospace; padding: 20px; color: #333; }
+          .ticket { max-width: 300px; margin: auto; border: 1px solid #ccc; padding: 15px; }
+          .header { text-align: center; border-bottom: 1px dashed #000; margin-bottom: 10px; padding-bottom: 10px; }
+          .section { margin-bottom: 10px; font-size: 12px; }
+          .label { font-weight: bold; text-transform: uppercase; display: block; font-size: 10px; color: #666; }
+          .total-box { background: #f0f0f0; padding: 10px; text-align: center; margin-top: 10px; border: 1px solid #000; }
+          .footer { text-align: center; font-size: 10px; margin-top: 20px; }
+          @media print { .no-print { display: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="ticket">
+          <div class="header">
+            <h2 style="margin:0;">ONYX TRANSFER</h2>
+            <p style="margin:0; font-size:12px;">Comprobante de Envío</p>
+            <small>ID: TX-${tx.id}</small>
+          </div>
+
+          <div class="section">
+            <span class="label">Fecha:</span>
+            ${fecha}
+          </div>
+
+          <div class="section">
+            <span class="label">Remitente:</span>
+            ${tx.sender_name}<br>
+            WA: ${tx.sender_whatsapp}
+          </div>
+
+          <div class="section" style="border-top: 1px dashed #eee; padding-top: 5px;">
+            <span class="label">Beneficiario:</span>
+            ${tx.recipient_name}<br>
+            WA: ${tx.recipient_whatsapp}<br>
+            Loc: ${tx.recipient_province}, ${tx.recipient_municipality}
+          </div>
+
+          <div class="total-box">
+            <span class="label">Total a Entregar:</span>
+            <strong style="font-size: 18px;">${cupTotal} CUP</strong><br>
+            <small>Tasa: 1 USD x ${tasaUsada} CUP</small><br>
+            <small>Monto: ${tx.usd_amount} USD</small>
+          </div>
+
+          <div class="footer">
+            ¡Gracias por confiar en nosotros!<br>
+            www.onyxtransfer.com
+          </div>
+        </div>
+        <div class="no-print" style="text-align:center; margin-top:20px;">
+          <button onclick="window.print();">Confirmar Impresión</button>
+        </div>
+      </body>
+    </html>
+  `);
+  
+  ventanaPrensa.document.close();
+}
+
+// IMPORTANTE: Exponer la función al objeto window en panelMain.js o aquí mismo
+window.imprimirTicket = imprimirTicket;
