@@ -17,16 +17,17 @@ function updateStatusIndicator() {
   if (!statusEl || !hoursEl || !indicator) return;
 
   if (isOpen) {
-    statusEl.innerText = "✅ ABIERTO";
+    statusEl.innerText = "ABIERTO";
     statusEl.style.color = "#28a745";
     hoursEl.innerText = "Atendiéndote 8am - 6pm";
     indicator.style.background = "rgba(40, 167, 69, 0.15)";
     indicator.style.borderLeft = "4px solid #28a745";
   } else {
-    statusEl.innerText = "🔴 CERRADO";
+    statusEl.innerText = "CERRADO";
     statusEl.style.color = "#dc3545";
     hoursEl.innerText = "Abrimos a las 8am mañana";
     indicator.style.background = "rgba(220, 53, 69, 0.15)";
     indicator.style.borderLeft = "4px solid #dc3545";
   }
 }
+
