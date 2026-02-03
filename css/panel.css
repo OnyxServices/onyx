@@ -444,3 +444,36 @@ body main {
   object-fit: contain;
   border-radius: var(--radius-sm);
 }
+
+/* =====================================================
+   ESTILOS PARA DETALLES DE TRANSACCIÓN
+   ===================================================== */
+#modal-details .modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#modal-details h4 {
+  color: var(--primary);
+  margin: 15px 0 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#det-address p {
+  margin: 5px 0;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+#det-map {
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.btn-whatsapp:hover {
+  background-color: #25d366;
+  border-color: #25d366;
+  color: #fff;
+}

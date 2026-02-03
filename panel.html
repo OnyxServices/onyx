@@ -142,6 +142,7 @@
                 <th onclick="setSort('recipient')" id="th-recipient">
                   Beneficiario
                 </th>
+                <th>Dirección</th>
                 <th onclick="setSort('whatsapp')" id="th-whatsapp">WhatsApp</th>
                 <th onclick="setSort('usd')" id="th-usd">USD</th>
                 <th onclick="setSort('cup')" id="th-cup">CUP</th>
@@ -253,6 +254,79 @@
       </div>
     </div>
 
+    <!-- Modal Detalles Transacción (Dirección + Mapa + PDF) -->
+    <div id="modal-details" class="modal">
+      <div class="modal-content" style="max-width: 900px">
+        <span class="close" onclick="cerrarModal('modal-details')"
+          >&times;</span
+        >
+        <h2>Detalles de Transacción</h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+          "
+        >
+          <div>
+            <h4>Información del Remitente</h4>
+            <p><strong>Nombre:</strong> <span id="det-sender"></span></p>
+            <p><strong>WhatsApp:</strong> <span id="det-sender-wa"></span></p>
+          </div>
+          <div>
+            <h4>Información del Destinatario</h4>
+            <p><strong>Nombre:</strong> <span id="det-recipient"></span></p>
+            <p>
+              <strong>WhatsApp:</strong> <span id="det-recipient-wa"></span>
+            </p>
+          </div>
+        </div>
+        <div>
+          <h4>Dirección Completa</h4>
+          <div
+            id="det-address"
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              padding: 15px;
+              border-radius: 8px;
+              margin-bottom: 20px;
+            "
+          ></div>
+        </div>
+        <div id="det-map-container" style="margin-bottom: 20px">
+          <h4>Ubicación en el Mapa</h4>
+          <div
+            id="det-map"
+            style="height: 300px; width: 100%; border-radius: 8px"
+          ></div>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <button class="btn btn-primary" onclick="generarPDF()">
+            Generar PDF
+          </button>
+          <button
+            class="btn btn-primary btn-whatsapp"
+            onclick="enviarWA_Remitente()"
+          >
+            Confirmar Remitente
+          </button>
+          <button
+            class="btn btn-primary btn-whatsapp"
+            onclick="enviarWA_Destinatario()"
+          >
+            Confirmar Destinatario
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script type="module" src="./js/panelMain.js"></script>
   </body>
 </html>

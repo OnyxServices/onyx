@@ -27,6 +27,7 @@ import { resetCustomSelects } from "./ui/customSelect.js";
 import { submitTransaction } from "./services/transactionService.js";
 import { validateTransferForm } from "./validators/formValidators.js";
 import { showError, showSuccess } from "./ui/swalUtils.js";
+import { initializeStatusIndicator } from "./ui/statusIndicator.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 
@@ -101,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   iniciar();
   setupListeners();
   setupLocationSelectors();
+  initializeStatusIndicator();
 });
 
 // Exponer para onclick en HTML (compatibilidad)

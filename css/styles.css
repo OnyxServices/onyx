@@ -1191,3 +1191,50 @@ input[type="number"]::-webkit-outer-spin-button {
     padding: 20px;
   }
 }
+
+/* =====================================================
+   INDICADOR DE ESTADO
+   ===================================================== */
+#status-indicator {
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* =====================================================
+   BOTONES SECUNDARIOS Y DETALLES
+   ===================================================== */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-details {
+  background: rgba(0, 169, 255, 0.2);
+  color: #00a9ff;
+  border: 1px solid #00a9ff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-details:hover {
+  background: rgba(0, 169, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 169, 255, 0.3);
+}

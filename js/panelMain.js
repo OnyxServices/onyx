@@ -24,9 +24,17 @@ import {
   borrarTodasTransacciones,
   verRecibo,
   exportarCSV,
+  setSort,
 } from "./panel/transaccionesTable.js";
 import { subscribeRealtime, setupAudioUnlock } from "./panel/realtime.js";
 import { toggleDarkMode, applySavedTheme } from "./panel/theme.js";
+import {
+  abrirDetallesTransaccion,
+  generarPDF,
+  enviarWA_Remitente,
+  enviarWA_Destinatario,
+} from "./panel/transactionDetails.js";
+import { initializeStatusIndicator } from "./ui/statusIndicator.js";
 
 let segundosParaRefresco = 15;
 
@@ -62,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   subscribeRealtime(refreshAll);
   applySavedTheme();
   setupAudioUnlock();
+  initializeStatusIndicator();
 });
 
 // Exponer para onclick en HTML
@@ -81,3 +90,7 @@ window.verRecibo = verRecibo;
 window.exportarCSV = exportarCSV;
 window.guardarConciliacion = guardarConciliacion;
 window.toggleDarkMode = toggleDarkMode;
+window.abrirDetallesTransaccion = abrirDetallesTransaccion;
+window.generarPDF = generarPDF;
+window.enviarWA_Remitente = enviarWA_Remitente;
+window.enviarWA_Destinatario = enviarWA_Destinatario;

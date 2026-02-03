@@ -133,10 +133,21 @@ export async function cargarTransaccionesPaginadas(refreshAll) {
         : "";
       const province = tx.recipient_province || "";
 
+      // Construir dirección completa
+      const addressParts = [];
+      if (tx.recipient_street) addressParts.push(tx.recipient_street);
+      if (tx.recipient_street_between)
+        addressParts.push(`entre ${tx.recipient_street_between}`);
+      if (tx.recipient_building) addressParts.push(tx.recipient_building);
+      if (tx.recipient_house_number)
+        addressParts.push(`#${tx.recipient_house_number}`);
+      const address = addressParts.join(", ");
+
       return `
         <tr class="${tx.state === "pending" ? "fila-pendiente" : ""}">
           <td>${tx.sender_name}</td>
           <td><b>${tx.recipient_name}</b><br><small>${province}</small></td>
+          <td><button class="btn-details" onclick="window.abrirDetallesTransaccion(${tx.id})" title="Ver detalles">📍 ${address || "Ver"}</button></td>
           <td>
             <a href="https://wa.me/${waLink}" target="_blank" style="text-decoration:none; color:#25D366; font-weight:bold;">
               📱 ${tx.recipient_whatsapp || "-"}
