@@ -6,8 +6,7 @@ import {
   validateNombreApellidos,
   validateWhatsAppCubaOrUS,
 } from "../validators/formValidators.js";
-
-const Swal = typeof window !== "undefined" ? window.Swal : null;
+import { showWarning, showSuccessToast } from "./swalUtils.js";
 
 export function abrirModal() {
   const notification = document.getElementById("fab-notification");
@@ -66,16 +65,10 @@ export function nextStep(step) {
     });
 
     if (hayCamposVacios) {
-      if (Swal) {
-        Swal.fire({
-          icon: "warning",
-          title: "Falta información",
-          text: "Por favor rellena todos los campos obligatorios para continuar.",
-          background: "#1e2332",
-          color: "#fff",
-          confirmButtonColor: "var(--primary)",
-        });
-      }
+      showWarning(
+        "Falta información",
+        "Por favor rellena todos los campos obligatorios para continuar.",
+      );
       return;
     }
 
@@ -83,16 +76,10 @@ export function nextStep(step) {
       const montoEl = document.getElementById("usd-amount");
       const monto = montoEl ? parseFloat(montoEl.value) : NaN;
       if (isNaN(monto) || monto < 50) {
-        if (Swal) {
-          Swal.fire({
-            icon: "warning",
-            title: "Monto insuficiente",
-            text: "El envío mínimo permitido es de $50 USD.",
-            background: "#1e2332",
-            color: "#fff",
-            confirmButtonColor: "var(--primary)",
-          });
-        }
+        showWarning(
+          "Monto insuficiente",
+          "El envío mínimo permitido es de $50 USD.",
+        );
         if (montoEl) montoEl.style.borderColor = "var(--error)";
         return;
       }
@@ -101,30 +88,14 @@ export function nextStep(step) {
         document.getElementById("sender-whatsapp")?.value ?? "";
       const rName = validateNombreApellidos(senderName, "Nombre del remitente");
       if (!rName.valid) {
-        if (Swal)
-          Swal.fire({
-            icon: "warning",
-            title: "Datos incorrectos",
-            text: rName.message,
-            background: "#1e2332",
-            color: "#fff",
-            confirmButtonColor: "var(--primary)",
-          });
+        showWarning("Datos incorrectos", rName.message);
         const el = document.getElementById("sender-name");
         if (el) el.style.borderColor = "var(--error)";
         return;
       }
       const rWa = validateWhatsAppCubaOrUS(senderWhatsapp);
       if (!rWa.valid) {
-        if (Swal)
-          Swal.fire({
-            icon: "warning",
-            title: "Datos incorrectos",
-            text: rWa.message,
-            background: "#1e2332",
-            color: "#fff",
-            confirmButtonColor: "var(--primary)",
-          });
+        showWarning("Datos incorrectos", rWa.message);
         const el = document.getElementById("sender-whatsapp");
         if (el) el.style.borderColor = "var(--error)";
         return;
@@ -141,30 +112,14 @@ export function nextStep(step) {
         "Nombre del destinatario",
       );
       if (!rName.valid) {
-        if (Swal)
-          Swal.fire({
-            icon: "warning",
-            title: "Datos incorrectos",
-            text: rName.message,
-            background: "#1e2332",
-            color: "#fff",
-            confirmButtonColor: "var(--primary)",
-          });
+        showWarning("Datos incorrectos", rName.message);
         const el = document.getElementById("recipient-name");
         if (el) el.style.borderColor = "var(--error)";
         return;
       }
       const rWa = validateWhatsAppCubaOrUS(recipientWhatsapp);
       if (!rWa.valid) {
-        if (Swal)
-          Swal.fire({
-            icon: "warning",
-            title: "Datos incorrectos",
-            text: rWa.message,
-            background: "#1e2332",
-            color: "#fff",
-            confirmButtonColor: "var(--primary)",
-          });
+        showWarning("Datos incorrectos", rWa.message);
         const el = document.getElementById("recipient-whatsapp");
         if (el) el.style.borderColor = "var(--error)";
         return;
@@ -187,16 +142,7 @@ export function copiarZelle() {
   const texto = document.getElementById("zelle-account")?.innerText;
   if (texto) {
     navigator.clipboard.writeText(texto).then(() => {
-      if (Swal) {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "success",
-          title: "Copiado!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
+      showSuccessToast("Copiado!");
     });
   }
 }

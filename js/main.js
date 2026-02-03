@@ -26,6 +26,7 @@ import { resetForm, getFormData } from "./components/transferForm.js";
 import { resetCustomSelects } from "./ui/customSelect.js";
 import { submitTransaction } from "./services/transactionService.js";
 import { validateTransferForm } from "./validators/formValidators.js";
+import { showError, showSuccess } from "./ui/swalUtils.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 
@@ -58,16 +59,7 @@ async function procesarEnvioFinal() {
   const file = fileInput?.files?.[0] ?? null;
   const validation = validateTransferForm(formData, file);
   if (!validation.valid) {
-    if (Swal) {
-      Swal.fire({
-        icon: "error",
-        title: "Datos incorrectos",
-        text: validation.message,
-        background: "#1e2332",
-        color: "#fff",
-        confirmButtonColor: "var(--primary)",
-      });
-    }
+    showError("Datos incorrectos", validation.message);
     return;
   }
 
@@ -79,16 +71,10 @@ async function procesarEnvioFinal() {
     const result = await submitTransaction(formData, file);
 
     if (result.success) {
-      if (Swal) {
-        await Swal.fire({
-          icon: "success",
-          title: "¡Envío Exitoso!",
-          text: "Tu transferencia está en revisión. Te avisaremos por WhatsApp.",
-          background: "#1e2332",
-          color: "#fff",
-          confirmButtonColor: "var(--primary)",
-        });
-      }
+      showSuccess(
+        "¡Envío Exitoso!",
+        "Tu transferencia está en revisión. Te avisaremos por WhatsApp.",
+      );
       cerrarModal();
       resetCustomSelects();
       document
@@ -100,29 +86,11 @@ async function procesarEnvioFinal() {
         actualizarCalculosHome(0);
       }
     } else {
-      if (Swal) {
-        Swal.fire({
-          icon: "error",
-          title: "Hubo un problema",
-          text: result.error,
-          background: "#1e2332",
-          color: "#fff",
-          confirmButtonColor: "var(--primary)",
-        });
-      }
+      showError("Hubo un problema", result.error);
     }
   } catch (error) {
     console.error("Error crítico:", error);
-    if (Swal) {
-      Swal.fire({
-        icon: "error",
-        title: "Hubo un problema",
-        text: error.message,
-        background: "#1e2332",
-        color: "#fff",
-        confirmButtonColor: "var(--primary)",
-      });
-    }
+    showError("Hubo un problema", error.message);
   } finally {
     btn.disabled = false;
     btn.innerText = originalBtnText || "Finalizar Envío";
@@ -135,18 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLocationSelectors();
 });
 
-/**
- * LÓGICA DE HORARIO DE ATENCIÓN
- */
-
-
-// Ejecutar al cargar la página
-actualizarEstadoHorario();
-
-// Opcional: Revisar cada minuto para cambiar el estado automáticamente 
-// sin que el usuario refresque la página
-setInterval(actualizarEstadoHorario, 60000);
-
 // Exponer para onclick en HTML (compatibilidad)
 window.procesarEnvioFinal = procesarEnvioFinal;
 window.copiarZelle = copiarZelle;
@@ -156,3 +112,93 @@ window.nextStep = nextStep;
 window.abrirModalTracking = abrirModalTracking;
 window.cerrarModalTracking = cerrarModalTracking;
 window.buscarTransaccion = buscarTransaccion;
+window.abrirModalMapa = abrirModalMapa;
+window.cerrarModalMapa = cerrarModalMapa;
+window.confirmarUbicacion = confirmarUbicacion;
+
+// Variables para el mapa
+let map;
+let marker;
+
+function abrirModalMapa() {
+  const modal = document.getElementById("modalMapa");
+  if (modal) {
+    modal.style.display = "flex";
+    inicializarMapa();
+  }
+}
+
+function cerrarModalMapa() {
+  const modal = document.getElementById("modalMapa");
+  if (modal) {
+    modal.style.display = "none";
+    if (map) {
+      map.remove();
+      map = null;
+      marker = null;
+    }
+  }
+}
+
+function inicializarMapa() {
+  // Coordenadas iniciales de Cuba
+  const cubaLat = 21.521757;
+  const cubaLng = -77.781167;
+  const zoom = 6;
+
+  map = L.map("map").setView([cubaLat, cubaLng], zoom);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map);
+
+  // Agregar marcador inicial si ya hay coordenadas
+  const latInput = document.getElementById("recipient-latitude");
+  const lngInput = document.getElementById("recipient-longitude");
+  if (latInput.value && lngInput.value) {
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
+    marker = L.marker([lat, lng]).addTo(map);
+    map.setView([lat, lng], 15);
+  }
+
+  // Evento para colocar marcador al hacer clic
+  map.on("click", function (e) {
+    if (marker) {
+      map.removeLayer(marker);
+    }
+    marker = L.marker(e.latlng).addTo(map);
+  });
+}
+
+function confirmarUbicacion() {
+  if (!marker) {
+    showError(
+      "Selecciona una ubicación",
+      "Haz clic en el mapa para seleccionar la ubicación del destinatario.",
+    );
+    return;
+  }
+
+  const latlng = marker.getLatLng();
+  document.getElementById("recipient-latitude").value = latlng.lat;
+  document.getElementById("recipient-longitude").value = latlng.lng;
+
+  const display = document.getElementById("location-display");
+  display.innerText = `Ubicación seleccionada: ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
+
+  cerrarModalMapa();
+}
+
+// Agregar listener para el botón de seleccionar ubicación
+document.addEventListener("DOMContentLoaded", () => {
+  const selectLocationBtn = document.getElementById("select-location-btn");
+  if (selectLocationBtn) {
+    selectLocationBtn.addEventListener("click", abrirModalMapa);
+  }
+
+  const confirmBtn = document.getElementById("confirm-location-btn");
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", confirmarUbicacion);
+  }
+});

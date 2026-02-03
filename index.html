@@ -10,19 +10,14 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/styles.css" />
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-07SFW672VY"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-07SFW672VY');
-</script>
   </head>
-
 
   <body>
     <!-- Pantalla de Carga Profesional -->
@@ -59,11 +54,6 @@
     </div>
 
     <header>
-           <!-- Indicador de Horario -->
-        <div id="business-status" class="business-status">
-        <span class="status-dot"></span>
-        <span id="status-text">Cargando...</span>
-        </div>
       <h1>Onyx Transfer</h1>
       <p>
         Envie dinero a sus familiares en Cuba de la forma más rápida y segura
@@ -178,12 +168,11 @@
                 <li>1.2. Proceda con el pago.</li>
               </ul>
               <li>
-                2. Realice una captura de pantalla de confirmacion de la transferencia.
+                2. Adjunte una captura de pantalla de su transferencia via
+                Zelle.
               </li>
-              <ul>
-              </ul>
               <li>
-                3. ¿Ya realizo la transferencia? e ¿hizo la captura de pantalla?...
+                3. Si ya realizo la transferencia e hizo la captura de pantalla,
                 presione Continuar.
               </li>
             </ul>
@@ -312,6 +301,67 @@
                 required
               />
             </div>
+            <div class="input-group">
+              <label for="recipient-street">Calle*</label>
+              <input
+                type="text"
+                id="recipient-street"
+                placeholder="Ej: Calle 23"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <label for="recipient-street-between">Entre calles</label>
+              <input
+                type="text"
+                id="recipient-street-between"
+                placeholder="Ej: Calle 24 y Calle 26"
+              />
+            </div>
+            <div class="input-group">
+              <label for="recipient-building">Edificio (si aplica)</label>
+              <input
+                type="text"
+                id="recipient-building"
+                placeholder="Ej: Edificio Habana"
+              />
+            </div>
+            <div class="input-group">
+              <label for="recipient-house-number"
+                >Número de casa/apartamento*</label
+              >
+              <input
+                type="text"
+                id="recipient-house-number"
+                placeholder="Ej: 123 o Apt 4B"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <label for="recipient-neighborhood">Reparto/Barrio*</label>
+              <input
+                type="text"
+                id="recipient-neighborhood"
+                placeholder="Ej: Vedado"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <label>Ubicación exacta</label>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                id="select-location-btn"
+              >
+                Seleccionar en mapa
+              </button>
+              <input type="hidden" id="recipient-latitude" />
+              <input type="hidden" id="recipient-longitude" />
+              <div
+                id="location-display"
+                style="margin-top: 10px; font-size: 14px; color: #666"
+              ></div>
+            </div>
             <div class="nav-buttons">
               <button type="button" class="btn btn-prev" onclick="nextStep(1)">
                 Atrás
@@ -321,7 +371,6 @@
               </button>
             </div>
           </div>
-
           <!-- PASO 3: Comprobante de pago-->
           <div class="step" id="step-3">
             <h2>Comprobante de pago</h2>
@@ -352,7 +401,31 @@
         </form>
       </div>
     </div>
-    <script src="./js/horario.js"></script>
+
+    <!-- Modal del Mapa -->
+    <div class="modal-overlay" id="modalMapa">
+      <div class="modal-content" style="width: 90%; max-width: 800px">
+        <h2>Seleccionar ubicación en el mapa</h2>
+        <p>
+          Haz clic en el mapa para seleccionar la ubicación exacta del
+          destinatario.
+        </p>
+        <div id="map" style="height: 400px; width: 100%"></div>
+        <div class="nav-buttons" style="margin-top: 20px">
+          <button
+            type="button"
+            class="btn btn-prev"
+            onclick="cerrarModalMapa()"
+          >
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-next" id="confirm-location-btn">
+            Confirmar ubicación
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="./js/main.js"></script>
   </body>
 </html>

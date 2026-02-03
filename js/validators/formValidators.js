@@ -17,7 +17,10 @@ const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 /**
  * Nombre y apellidos: obligatorio, máx 100 caracteres.
  */
-export function validateNombreApellidos(value, fieldLabel = "Nombre y apellidos") {
+export function validateNombreApellidos(
+  value,
+  fieldLabel = "Nombre y apellidos",
+) {
   const v = typeof value === "string" ? value.trim() : "";
   if (!v) {
     return { valid: false, message: `${fieldLabel} es obligatorio.` };
@@ -41,7 +44,11 @@ export function validateWhatsAppCubaOrUS(value) {
   }
   const digits = v.replace(/\D/g, "");
   // Cuba: 53 + 8 dígitos = 10 dígitos total, o solo 8 digitos
-  if ((/^53\d{8}$/.test(digits)) || (/^5\d{7}$/.test(digits)) || (/^63\d{6}$/.test(digits))) {
+  if (
+    /^53\d{8}$/.test(digits) ||
+    /^5\d{7}$/.test(digits) ||
+    /^63\d{6}$/.test(digits)
+  ) {
     return { valid: true };
   }
   // EE.UU.: 1 + 10 dígitos = 11, o solo 10 dígitos (sin código país)
@@ -60,11 +67,15 @@ export function validateWhatsAppCubaOrUS(value) {
  */
 export function validateSoloImagen(file) {
   if (!file) {
-    return { valid: false, message: "Debes subir la foto de la transferencia." };
+    return {
+      valid: false,
+      message: "Debes subir la foto de la transferencia.",
+    };
   }
   const type = (file.type || "").toLowerCase();
   const name = (file.name || "").toLowerCase();
-  const isImageType = IMAGE_TYPES.some((t) => type === t) || type.startsWith("image/");
+  const isImageType =
+    IMAGE_TYPES.some((t) => type === t) || type.startsWith("image/");
   const hasImageExt = IMAGE_EXTENSIONS.some((ext) => name.endsWith(ext));
   if (!isImageType && !hasImageExt) {
     return {
@@ -108,6 +119,9 @@ export function validateTransferForm(formData, proofFile) {
     recipient_province,
     recipient_municipality,
     usd_amount,
+    recipient_street,
+    recipient_house_number,
+    recipient_neighborhood,
   } = formData || {};
 
   const r1 = validateNombreApellidos(sender_name, "Nombre del remitente");
@@ -129,9 +143,31 @@ export function validateTransferForm(formData, proofFile) {
     return { valid: false, message: "El municipio es obligatorio." };
   }
 
+  if (!recipient_street?.trim()) {
+    return {
+      valid: false,
+      message: "La calle del destinatario es obligatoria.",
+    };
+  }
+  if (!recipient_house_number?.trim()) {
+    return {
+      valid: false,
+      message: "El número de casa/apartamento del destinatario es obligatorio.",
+    };
+  }
+  if (!recipient_neighborhood?.trim()) {
+    return {
+      valid: false,
+      message: "El reparto/barrio del destinatario es obligatorio.",
+    };
+  }
+
   const monto = parseFloat(usd_amount);
   if (isNaN(monto) || monto < 50) {
-    return { valid: false, message: "El monto mínimo permitido es de $50 USD." };
+    return {
+      valid: false,
+      message: "El monto mínimo permitido es de $50 USD.",
+    };
   }
 
   const r5 = validateSoloImagen(proofFile);

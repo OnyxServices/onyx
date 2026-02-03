@@ -2,6 +2,7 @@
 
 import { appStore } from "../store/appStore.js";
 import { searchTransactions } from "../services/transactionService.js";
+import { showWarning } from "./swalUtils.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 
@@ -35,15 +36,7 @@ export async function buscarTransaccion() {
   if (!resultsContainer) return;
 
   if (!busqueda) {
-    if (Swal) {
-      Swal.fire({
-        icon: "warning",
-        title: "Atención",
-        text: "Ingresa tu número de WhatsApp.",
-        background: "#1e2332",
-        color: "#fff",
-      });
-    }
+    showWarning("Atención", "Ingresa tu número de WhatsApp.");
     return;
   }
 

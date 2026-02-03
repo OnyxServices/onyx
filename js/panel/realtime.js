@@ -1,6 +1,7 @@
 /** Real-time: suscripción a nuevas transacciones, sonido y notificación */
 
 import { supabaseClient } from "../api/client.js";
+import { showNewTransactionToast } from "../ui/swalUtils.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 
@@ -14,43 +15,19 @@ export function setupAudioUnlock() {
     () => {
       sonidoNotificacion.play().catch(() => {});
     },
-    { once: true }
+    { once: true },
   );
 }
 
 function notificarNuevaTransaccion(datos) {
   sonidoNotificacion.currentTime = 0;
-  sonidoNotificacion.play().catch(() =>
-    console.log("Esperando interacción del usuario para activar sonido.")
-  );
+  sonidoNotificacion
+    .play()
+    .catch(() =>
+      console.log("Esperando interacción del usuario para activar sonido."),
+    );
 
-  if (Swal) {
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "success",
-      iconColor: "#25D366",
-      title: "¡NUEVA TRANSACCIÓN!",
-      html: `
-        <div style="text-align: left; font-size: 0.9rem;">
-          Enviado por: <b>${datos.sender_name || ""}</b><br>
-          Monto: <span style="color: #166534; font-weight: bold;">$${datos.usd_amount || 0} USD</span>
-        </div>
-      `,
-      showConfirmButton: false,
-      timer: 10000,
-      timerProgressBar: true,
-      background: document.body.classList.contains("dark")
-        ? "#1e293b"
-        : "#ffffff",
-      color: document.body.classList.contains("dark") ? "#f1f5f9" : "#1e293b",
-      didOpen: (toast) => {
-        toast.parentElement.style.zIndex = "10000";
-        toast.addEventListener("mouseenter", Swal.stopTimer);
-        toast.addEventListener("mouseleave", Swal.resumeTimer);
-      },
-    });
-  }
+  showNewTransactionToast(datos);
 }
 
 export function subscribeRealtime(onRefresh) {
@@ -67,7 +44,7 @@ export function subscribeRealtime(onRefresh) {
       (payload) => {
         notificarNuevaTransaccion(payload.new);
         if (typeof onRefresh === "function") onRefresh();
-      }
+      },
     )
     .subscribe();
 }
