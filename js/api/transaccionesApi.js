@@ -9,7 +9,7 @@ export async function getByWhatsApp(whatsapp, limit = 5) {
   const result = await supabaseClient
     .from("transacciones")
     .select("*")
-    .eq("recipient_whatsapp", whatsapp)
+    .eq("sender_whatsapp", whatsapp)
     .limit(limit);
   return { data: result.data, error: result.error };
 }
@@ -80,3 +80,4 @@ export async function insertLog(log) {
   }
   return supabaseClient.from("logs_operacion").insert([log]);
 }
+
