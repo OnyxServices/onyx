@@ -146,3 +146,12 @@ export function copiarZelle() {
     });
   }
 }
+
+export function copiarPropietario() {
+  const texto = document.getElementById("zelle-owner")?.innerText;
+  if (texto) {
+    navigator.clipboard.writeText(texto).then(() => {
+      showSuccessToast("Copiado!");
+    });
+  }
+}

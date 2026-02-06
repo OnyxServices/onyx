@@ -30,4 +30,3 @@ function updateStatusIndicator() {
     indicator.style.borderLeft = "4px solid #dc3545";
   }
 }
-

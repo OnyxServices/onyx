@@ -10,24 +10,19 @@ import {
 } from "./panel/modals.js";
 import { cargarTasa, actualizarConfig } from "./panel/config.js";
 import { cargarMetricas } from "./panel/metrics.js";
-import {
-  cargarConciliacion,
-  guardarConciliacion,
-} from "./panel/conciliacion.js";
-import { cargarLogs } from "./panel/logs.js";
+import { cargarGraficos } from "./panel/charts.js";
 import {
   cargarTransacciones,
   cargarTransaccionesPaginadas,
   resetYPaginación,
   cambiarPagina,
   cambiarEstado,
-  borrarTodasTransacciones,
   verRecibo,
   exportarCSV,
   setSort,
 } from "./panel/transaccionesTable.js";
 import { subscribeRealtime, setupAudioUnlock } from "./panel/realtime.js";
-import { toggleDarkMode, applySavedTheme } from "./panel/theme.js";
+//import { toggleDarkMode, applySavedTheme } from "./panel/theme.js";
 import {
   abrirDetallesTransaccion,
   generarPDF,
@@ -44,8 +39,7 @@ async function refreshAll() {
 }
 
 function onOpenModal(id) {
-  if (id === "modal-conciliacion") cargarConciliacion();
-  if (id === "modal-logs") cargarLogs();
+  if (id === "modal-metricas") cargarGraficos();
 }
 
 function abrirModalConCarga(id) {
@@ -85,11 +79,8 @@ window.resetYPaginación = () => {
 window.setSort = (column) => setSort(column);
 window.cambiarPagina = (delta) => cambiarPagina(delta, refreshAll);
 window.cambiarEstado = (id, estado) => cambiarEstado(id, estado, refreshAll);
-window.borrarTodasTransacciones = () => borrarTodasTransacciones(refreshAll);
 window.verRecibo = verRecibo;
 window.exportarCSV = exportarCSV;
-window.guardarConciliacion = guardarConciliacion;
-window.toggleDarkMode = toggleDarkMode;
 window.abrirDetallesTransaccion = abrirDetallesTransaccion;
 window.generarPDF = generarPDF;
 window.enviarWA_Remitente = enviarWA_Remitente;

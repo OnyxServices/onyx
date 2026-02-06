@@ -12,8 +12,10 @@ export async function cargarTasa() {
   if (data) {
     const tasaEl = document.getElementById("tasa_cambio");
     const zelleEl = document.getElementById("zelle_cuenta");
+    const ownerEl = document.getElementById("zelle_owner");
     if (tasaEl) tasaEl.value = data.exchange_rate;
     if (zelleEl) zelleEl.value = data.zelle_cuenta || "";
+    if (ownerEl) ownerEl.value = data.zelle_owner || "";
     configId = data.id;
   }
 }
@@ -21,6 +23,7 @@ export async function cargarTasa() {
 export async function actualizarConfig(refreshAll) {
   const tasa = parseFloat(document.getElementById("tasa_cambio")?.value);
   const zelle = (document.getElementById("zelle_cuenta")?.value ?? "").trim();
+  const owner = (document.getElementById("zelle_owner")?.value ?? "").trim();
   const Toast = getPanelToast();
 
   const zelleValidation = validateZelleUS(zelle);
@@ -37,6 +40,7 @@ export async function actualizarConfig(refreshAll) {
   const { error } = await updateConfig(configId, {
     exchange_rate: tasa,
     zelle_cuenta: zelle,
+    zelle_owner: owner,
   });
 
   if (error) {

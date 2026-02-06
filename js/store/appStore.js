@@ -3,6 +3,7 @@
 export const appStore = {
   tasaCambio: 0,
   cuentaZelle: "",
+  propietarioZelle: "",
   regionesCuba: [],
   customSelectsInitialized: false,
 };

@@ -17,25 +17,7 @@
   <body>
     <header class="panel-header">
       <span class="panel-title">Onyx Transfer – Admin</span>
-      <button
-        onclick="toggleDarkMode()"
-        id="dark-mode-btn"
-        style="
-          position: absolute;
-          right: 20px;
-          top: 20px;
-          cursor: pointer;
-          background: none;
-          border: 1px solid white;
-          color: white;
-          border-radius: 5px;
-          padding: 5px;
-        "
-      >
-        🌙
-      </button>
     </header>
-
     <main>
       <!-- Configuración Rápida -->
       <div class="config-container">
@@ -57,6 +39,14 @@
               placeholder="+1 234 567 8901 (solo número EE.UU.)"
             />
           </div>
+          <div style="border-left: 1px solid var(--border); padding-left: 15px">
+            <h3>Propietario Zelle</h3>
+            <input
+              type="text"
+              id="zelle_owner"
+              placeholder="Nombre del propietario"
+            />
+          </div>
           <button class="btn-primary" onclick="actualizarConfig()">
             Actualizar
           </button>
@@ -67,20 +57,12 @@
       <!-- Dashboard -->
       <div class="dashboard">
         <div class="card" onclick="abrirModal('modal-transacciones')">
-          <h3>💸 Transacciones</h3>
-          <p>Gestionar envíos y beneficiarios</p>
+          <h3>💸 Transferencias</h3>
+          <p>Gestionar envíos</p>
         </div>
         <div class="card" onclick="abrirModal('modal-metricas')">
-          <h3>📊 Resumen Diario</h3>
-          <p>Totales de hoy</p>
-        </div>
-        <div class="card" onclick="abrirModal('modal-conciliacion')">
-          <h3>⚖️ Conciliación</h3>
-          <p>Cierre de caja y bancos</p>
-        </div>
-        <div class="card" onclick="abrirModal('modal-logs')">
-          <h3>📜 Auditoría</h3>
-          <p>Historial de acciones</p>
+          <h3>📊 Resumen de operaciones</h3>
+          <p>Totales de hoy y del mes</p>
         </div>
         <div class="card" onclick="exportarCSV()">
           <h3>📥 Reporte CSV</h3>
@@ -97,21 +79,7 @@
           >&times;</span
         >
 
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-          "
-        >
-          <h2>Gestión de Transacciones</h2>
-          <button class="btn-danger" onclick="borrarTodasTransacciones()">
-            🗑️ Limpiar
-          </button>
-        </div>
+        <h2 style="margin-bottom: 20px">Gestión de transferencias</h2>
 
         <!-- BARRA DE FILTROS -->
         <div class="filter-bar">
@@ -127,7 +95,7 @@
             <option value="approved">Confirmados</option>
             <option value="rejected">Rechazados</option>
           </select>
-          <div style="display: flex; align-items: center; gap: 5px">
+          <div class="date-range">
             <input type="date" id="f-inicio" onchange="resetYPaginación()" />
             <span>a</span>
             <input type="date" id="f-fin" onchange="resetYPaginación()" />
@@ -158,7 +126,7 @@
         <!-- CONTROLES DE PAGINACIÓN -->
         <div class="pagination-container">
           <button onclick="cambiarPagina(-1)" id="btn-prev">Anterior</button>
-          <span id="page-info">Página 1</span>
+          <span id="page-info"></span>
           <button onclick="cambiarPagina(1)" id="btn-next">Siguiente</button>
         </div>
       </div>
@@ -166,90 +134,61 @@
 
     <!-- Modal Métricas -->
     <div id="modal-metricas" class="modal">
-      <div class="modal-content" style="max-width: 800px">
+      <div class="modal-content" style="max-width: 1000px">
         <span class="close" onclick="cerrarModal('modal-metricas')"
           >&times;</span
         >
-        <h2>Resumen Operativo (Hoy)</h2>
-        <div
-          class="modal-metricas"
-          style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-          "
-        >
-          <div class="card">
-            <h4>Cant.</h4>
-            <p id="m-cantidad">0</p>
-          </div>
-          <div class="card">
-            <h4>USD Total</h4>
-            <p id="m-usd-recibido">$0.00</p>
-          </div>
-          <div class="card">
-            <h4>CUP Total</h4>
-            <p id="m-cup-entregado">0 CUP</p>
-          </div>
-        </div>
-      </div>
-    </div>
+        <h2>Resumen de operaciones</h2>
 
-    <!-- Modal Conciliación -->
-    <div id="modal-conciliacion" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="cerrarModal('modal-conciliacion')"
-          >&times;</span
-        >
-        <h2>Conciliación Diaria</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px">
-          <input
-            type="number"
-            id="conc-confirmado"
-            readonly
-            placeholder="Sistema"
-          />
-          <input type="number" id="conc-banco" placeholder="Monto en Banco" />
-          <input type="text" id="conc-obs" placeholder="Notas..." />
-          <button class="btn-primary" onclick="guardarConciliacion()">
-            Cerrar Día
-          </button>
-        </div>
-        <div class="table-container">
-          <table id="tabla-conciliacion">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Sistema</th>
-                <th>Banco</th>
-                <th>Dif.</th>
-                <th>Obs.</th>
-              </tr>
-            </thead>
-            <tbody id="cuerpo-conciliacion"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+        <!-- Gráficos Día y Mes -->
+        <div class="charts-container">
+          <div class="chart-card">
+            <h3>📅 Operaciones de hoy</h3>
+            <div class="chart-grid">
+              <div class="chart-item">
+                <span class="chart-label">Cantidad</span>
+                <span class="chart-value" id="chart-day-qty">0</span>
+              </div>
+              <div class="chart-item">
+                <span class="chart-label">USD</span>
+                <span class="chart-value" id="chart-day-usd">$0.00</span>
+              </div>
+              <div class="chart-item">
+                <span class="chart-label">CUP</span>
+                <span class="chart-value" id="chart-day-cup">0 CUP</span>
+              </div>
+            </div>
+          </div>
 
-    <!-- Modal Logs -->
-    <div id="modal-logs" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="cerrarModal('modal-logs')">&times;</span>
-        <h2>Historial de Auditoría</h2>
-        <div class="table-container">
-          <table id="tabla-logs">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>TX</th>
-                <th>Acción</th>
-                <th>Admin</th>
-                <th>Comentario</th>
-              </tr>
-            </thead>
-            <tbody id="cuerpo-logs"></tbody>
-          </table>
+          <div class="chart-card">
+            <h3>📊 Operaciones del mes</h3>
+            <div class="chart-grid">
+              <div class="chart-item">
+                <span class="chart-label">Cantidad</span>
+                <span class="chart-value" id="chart-month-qty">0</span>
+              </div>
+              <div class="chart-item">
+                <span class="chart-label">USD</span>
+                <span class="chart-value" id="chart-month-usd">$0.00</span>
+              </div>
+              <div class="chart-item">
+                <span class="chart-label">CUP</span>
+                <span class="chart-value" id="chart-month-cup">0 CUP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <span class="stat-label">Promedio piario</span>
+            <span class="stat-value" id="chart-avg-day">0 tx/día</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Proyección mensual</span>
+            <span class="stat-value" id="chart-projection">$0.00</span>
+          </div>
         </div>
       </div>
     </div>
@@ -260,7 +199,7 @@
         <span class="close" onclick="cerrarModal('modal-details')"
           >&times;</span
         >
-        <h2>Detalles de Transacción</h2>
+        <h2>Detalles de la transferencia</h2>
         <div
           style="
             display: grid;
@@ -270,12 +209,12 @@
           "
         >
           <div>
-            <h4>Información del Remitente</h4>
+            <h4>Información del remitente</h4>
             <p><strong>Nombre:</strong> <span id="det-sender"></span></p>
             <p><strong>WhatsApp:</strong> <span id="det-sender-wa"></span></p>
           </div>
           <div>
-            <h4>Información del Destinatario</h4>
+            <h4>Información del destinatario</h4>
             <p><strong>Nombre:</strong> <span id="det-recipient"></span></p>
             <p>
               <strong>WhatsApp:</strong> <span id="det-recipient-wa"></span>
@@ -283,7 +222,7 @@
           </div>
         </div>
         <div>
-          <h4>Dirección Completa</h4>
+          <h4>Dirección completa</h4>
           <div
             id="det-address"
             style="
@@ -295,7 +234,7 @@
           ></div>
         </div>
         <div id="det-map-container" style="margin-bottom: 20px">
-          <h4>Ubicación en el Mapa</h4>
+          <h4>Ubicación en el mapa</h4>
           <div
             id="det-map"
             style="height: 300px; width: 100%; border-radius: 8px"
@@ -309,13 +248,13 @@
             class="btn btn-primary btn-whatsapp"
             onclick="enviarWA_Remitente()"
           >
-            Confirmar Remitente
+            Confirmar remitente
           </button>
           <button
             class="btn btn-primary btn-whatsapp"
             onclick="enviarWA_Destinatario()"
           >
-            Confirmar Destinatario
+            Confirmar destinatario
           </button>
         </div>
       </div>

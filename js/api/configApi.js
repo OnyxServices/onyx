@@ -14,12 +14,15 @@ export async function getConfig() {
   return { data: result.data, error: result.error };
 }
 
-export async function updateConfig(id, { exchange_rate, zelle_cuenta }) {
+export async function updateConfig(
+  id,
+  { exchange_rate, zelle_cuenta, zelle_owner },
+) {
   if (!supabaseClient) {
     return { error: new Error("Cliente Supabase no disponible") };
   }
   return supabaseClient
     .from("config")
-    .update({ exchange_rate, zelle_cuenta })
+    .update({ exchange_rate, zelle_cuenta, zelle_owner })
     .eq("id", id);
 }

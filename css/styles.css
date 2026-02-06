@@ -102,6 +102,17 @@ body {
   letter-spacing: -1px;
 }
 
+/* Reusable brand gradient for titles (same as loader) */
+.brand-gradient,
+.panel-header .panel-title {
+  background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
 .loader-brand p {
   color: var(--text-secondary);
   font-size: 0.9rem;

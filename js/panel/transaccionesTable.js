@@ -5,7 +5,6 @@ import {
   listTransacciones,
   updateState,
   insertLog,
-  deleteAll,
 } from "../api/transaccionesApi.js";
 import { getPanelToast } from "./toast.js";
 import { showImageModal } from "../ui/swalUtils.js";
@@ -113,8 +112,7 @@ export async function cargarTransaccionesPaginadas(refreshAll) {
   const btnPrev = document.getElementById("btn-prev");
   const btnNext = document.getElementById("btn-next");
   const totalPages = Math.ceil((count || 0) / itemsPorPagina) || 1;
-  if (pageInfo)
-    pageInfo.innerText = `Página ${paginaActual + 1} de ${totalPages}`;
+  if (pageInfo) pageInfo.innerText = `${paginaActual + 1} de ${totalPages}`;
   if (btnPrev) btnPrev.disabled = paginaActual === 0;
   if (btnNext)
     btnNext.disabled =
@@ -189,27 +187,9 @@ export async function cargarTransaccionesPaginadas(refreshAll) {
 export async function cambiarEstado(id, nuevoEstado, refreshAll) {
   const { error } = await updateState(id, nuevoEstado);
   if (error) return;
-  await insertLog({
-    transaccion_id: id,
-    accion: `state: ${nuevoEstado}`,
-    usuario_admin: "Admin",
-    comentario: `Marcada como ${nuevoEstado} manualmente`,
-  });
   const Toast = getPanelToast();
   if (Toast)
     Toast.fire({ icon: "success", title: `Transacción ${nuevoEstado}` });
-  if (typeof refreshAll === "function") await refreshAll();
-}
-
-export async function borrarTodasTransacciones(refreshAll) {
-  if (!confirm("⚠️ ¿Eliminar todo el historial?")) return;
-  const { error } = await deleteAll();
-  const Toast = getPanelToast();
-  if (error) {
-    if (Toast) Toast.fire({ icon: "error", title: "Error" });
-    return;
-  }
-  if (Toast) Toast.fire({ icon: "success", title: "Base de datos limpia" });
   if (typeof refreshAll === "function") await refreshAll();
 }
 

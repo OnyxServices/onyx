@@ -10,23 +10,13 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/styles.css" />
-
-    <!-- Google Analytics (GA4) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-07SFW672VY"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-07SFW672VY');
-</script>
-
   </head>
 
   <body>
@@ -201,7 +191,7 @@
             </ul>
 
             <div class="calc-box zelle-box">
-              <label>Cuenta Zelle</label>
+              <label>Cuenta Zelle y propietario</label>
               <div class="zelle-box-content">
                 <span id="zelle-account" class="zelle-account"
                   >pago@fastcuba.com</span
@@ -210,6 +200,20 @@
                   type="button"
                   class="btn btn-next btn-small"
                   onclick="copiarZelle()"
+                >
+                  Copiar
+                </button>
+              </div>
+              <div
+                class="zelle-box-content"
+                id="zelle-owner-container"
+                style="margin-top: 10px"
+              >
+                <span id="zelle-owner" class="zelle-account"></span>
+                <button
+                  type="button"
+                  class="btn btn-next btn-small"
+                  onclick="copiarPropietario()"
                 >
                   Copiar
                 </button>
@@ -346,7 +350,7 @@
               <input
                 type="text"
                 id="recipient-building"
-                placeholder="Ej: Edificio Habana"
+                placeholder="Ej: Edificio 4"
               />
             </div>
             <div class="input-group">
@@ -365,7 +369,7 @@
               <input
                 type="text"
                 id="recipient-neighborhood"
-                placeholder="Ej: Vedado"
+                placeholder="Ej: Pastorita"
                 required
               />
             </div>
@@ -448,6 +452,7 @@
         </div>
       </div>
     </div>
-   <script type="module" src="./js/main.js"></script>
+
+    <script type="module" src="./js/main.js"></script>
   </body>
 </html>

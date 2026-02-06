@@ -16,6 +16,7 @@ import {
   cerrarModal,
   nextStep,
   copiarZelle,
+  copiarPropietario,
 } from "./ui/modalTransfer.js";
 import {
   abrirModalTracking,
@@ -108,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Exponer para onclick en HTML (compatibilidad)
 window.procesarEnvioFinal = procesarEnvioFinal;
 window.copiarZelle = copiarZelle;
+window.copiarPropietario = copiarPropietario;
 window.abrirModal = abrirModal;
 window.cerrarModal = cerrarModal;
 window.nextStep = nextStep;
