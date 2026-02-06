@@ -4,7 +4,8 @@ import { resetForm } from "../components/transferForm.js";
 import { resetCustomSelects } from "./customSelect.js";
 import {
   validateNombreApellidos,
-  validateWhatsAppCubaOrUS,
+  validateWhatsAppUS,
+  validateWhatsAppCuba,
 } from "../validators/formValidators.js";
 import { showWarning, showSuccessToast } from "./swalUtils.js";
 
@@ -93,7 +94,7 @@ export function nextStep(step) {
         if (el) el.style.borderColor = "var(--error)";
         return;
       }
-      const rWa = validateWhatsAppCubaOrUS(senderWhatsapp);
+      const rWa = validateWhatsAppUS(senderWhatsapp);
       if (!rWa.valid) {
         showWarning("Datos incorrectos", rWa.message);
         const el = document.getElementById("sender-whatsapp");
@@ -117,7 +118,7 @@ export function nextStep(step) {
         if (el) el.style.borderColor = "var(--error)";
         return;
       }
-      const rWa = validateWhatsAppCubaOrUS(recipientWhatsapp);
+      const rWa = validateWhatsAppCuba(recipientWhatsapp);
       if (!rWa.valid) {
         showWarning("Datos incorrectos", rWa.message);
         const el = document.getElementById("recipient-whatsapp");

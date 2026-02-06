@@ -37,7 +37,24 @@ export function validateNombreApellidos(
 /**
  * WhatsApp: solo números Cuba (+53 + 8 dígitos) o EE.UU. (+1 + 10 dígitos).
  */
-export function validateWhatsAppCubaOrUS(value) {
+export function validateWhatsAppUS(value) {
+  const v = typeof value === "string" ? value.trim() : "";
+  if (!v) {
+    return { valid: false, message: "El número de WhatsApp es obligatorio." };
+  }
+  // EUA: 1 + 10 dígitos = 11 dígitos total, o solo 10 dígitos
+  const digits = v.replace(/\D/g, "");
+  if (/^1\d{10}$/.test(digits) || /^\d{10}$/.test(digits)) {
+    return { valid: true };
+  }
+  return {
+    valid: false,
+    message:
+      "Solo se permiten números de WhatsApp de Estados Unidos (+1). Ej: +1 234 567 8901",
+  };
+}
+
+export function validateWhatsAppCuba(value) {
   const v = typeof value === "string" ? value.trim() : "";
   if (!v) {
     return { valid: false, message: "El número de WhatsApp es obligatorio." };
@@ -45,20 +62,17 @@ export function validateWhatsAppCubaOrUS(value) {
   const digits = v.replace(/\D/g, "");
   // Cuba: 53 + 8 dígitos = 10 dígitos total, o solo 8 digitos
   if (
-    /^53\d{8}$/.test(digits) ||
+    /^535\d{7}$/.test(digits) ||
     /^5\d{7}$/.test(digits) ||
-    /^63\d{6}$/.test(digits)
+    /^63\d{6}$/.test(digits) ||
+    /^635\d{7}$/.test(digits)
   ) {
-    return { valid: true };
-  }
-  // EE.UU.: 1 + 10 dígitos = 11, o solo 10 dígitos (sin código país)
-  if (/^1\d{10}$/.test(digits) || /^\d{10}$/.test(digits)) {
     return { valid: true };
   }
   return {
     valid: false,
     message:
-      "Solo se permiten números de WhatsApp de Cuba (+53) o de Estados Unidos (+1). Ej: +53 5 123 4567 o +1 234 567 8901",
+      "Solo se permiten números de WhatsApp de Cuba (+53). Ej: +53 5 123 4567",
   };
 }
 
@@ -127,13 +141,13 @@ export function validateTransferForm(formData, proofFile) {
   const r1 = validateNombreApellidos(sender_name, "Nombre del remitente");
   if (!r1.valid) return r1;
 
-  const r2 = validateWhatsAppCubaOrUS(sender_whatsapp);
+  const r2 = validateWhatsAppUS(sender_whatsapp);
   if (!r2.valid) return r2;
 
   const r3 = validateNombreApellidos(recipient_name, "Nombre del destinatario");
   if (!r3.valid) return r3;
 
-  const r4 = validateWhatsAppCubaOrUS(recipient_whatsapp);
+  const r4 = validateWhatsAppCuba(recipient_whatsapp);
   if (!r4.valid) return r4;
 
   if (!recipient_province?.trim()) {

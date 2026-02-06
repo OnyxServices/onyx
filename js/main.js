@@ -78,7 +78,6 @@ async function procesarEnvioFinal() {
         "Tu transferencia está en revisión. Te avisaremos por WhatsApp.",
       );
       cerrarModal();
-      resetCustomSelects();
       document
         .querySelectorAll("#transaction-form input, #transaction-form textarea")
         .forEach((input) => (input.value = ""));

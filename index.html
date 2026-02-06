@@ -18,15 +18,20 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/styles.css" />
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-07SFW672VY"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-07SFW672VY"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-  gtag('config', 'G-07SFW672VY');
-</script>
-
+      gtag("config", "G-07SFW672VY");
+    </script>
+    <script src="./js/analytic.js"></script>
   </head>
 
   <body>
@@ -86,7 +91,7 @@
         <div class="calc-card">
           <div class="calc-input-row">
             <div class="input-field">
-              <label>Monto a enviar (USD)</label>
+              <label for="home-usd-amount">Monto a enviar (USD)</label>
               <input
                 type="number"
                 id="home-usd-amount"
@@ -96,7 +101,7 @@
             </div>
             <div class="swap-icon">➔</div>
             <div class="input-field">
-              <label>Monto recibido (CUP)</label>
+              <label for="home-cup-amount">Monto recibido (CUP)</label>
               <input
                 type="text"
                 id="home-cup-amount"
@@ -127,7 +132,7 @@
     <div class="fab" id="main-fab" onclick="abrirModal()" title="Nuevo Envío">
       <!-- Nueva burbuja de notificación -->
       <div class="fab-badge-notification" id="fab-notification">
-        Presione aquí para iniciar tu transacción
+        Presione aquí para iniciar su transferencia
       </div>
       <span>+</span>
     </div>
@@ -142,9 +147,9 @@
         </p>
 
         <div class="input-group">
-          <label>Número de WhatsApp</label>
+          <label for="search-input">Número de WhatsApp</label>
           <input
-            type="text"
+            type="tel"
             id="search-input"
             placeholder="Ej: +1 123 456 7890"
           />
@@ -183,20 +188,13 @@
             <p>Para procesar su envío siga estos pasos:</p>
             <ul>
               <li>
-                1. Realice la transferencia vía Zelle a la cuenta que se muestra
-                a continuación.
-              </li>
-              <ul>
-                <li>1.1. Copie la dirección de la cuenta Zelle de Onyx.</li>
-                <li>1.2. Proceda con el pago.</li>
-              </ul>
-              <li>
-                2. Adjunte una captura de pantalla de su transferencia via
-                Zelle.
+                1. Realice la transferencia vía Zelle a la cuenta y propietario
+                que se muestra a continuación y tome una captura de pantalla de
+                dicha transferencia.
               </li>
               <li>
-                3. Si ya realizo la transferencia e hizo la captura de pantalla,
-                presione Continuar.
+                2. Presione Continuar para tomar sus datos y los de su
+                destinatario.
               </li>
             </ul>
 
@@ -281,7 +279,7 @@
             <div class="input-group">
               <label for="sender-whatsapp">Número de WhatsApp*</label>
               <input
-                type="number"
+                type="tel"
                 id="sender-whatsapp"
                 placeholder="Ej: +1 (123) 456 8901"
                 required
@@ -302,7 +300,7 @@
           <div class="step" id="step-2">
             <h2>Destinatario</h2>
             <div class="input-group">
-              <label for="beneficiario_nombre">Nombre y apellidos*</label>
+              <label for="recipient-name">Nombre y apellidos*</label>
               <input
                 type="text"
                 id="recipient-name"
@@ -332,7 +330,7 @@
             <div class="input-group">
               <label for="recipient-whatsapp">Número de WhatsApp*</label>
               <input
-                type="number"
+                type="tel"
                 id="recipient-whatsapp"
                 placeholder="Ej: +53 5 123 4567"
                 required
@@ -384,7 +382,7 @@
               />
             </div>
             <div class="input-group">
-              <label>Ubicación exacta</label>
+              <label for="select-location-btn">Ubicación exacta</label>
               <button
                 type="button"
                 class="btn btn-secondary"

@@ -12,6 +12,9 @@ export function resetForm() {
   const step0 = document.getElementById("step-0");
   if (step0) step0.classList.add("active");
 
+  const cup = document.getElementById("cup-total");
+  if (cup) cup.innerText = "0 CUP";
+
   const homeInput = document.getElementById("home-usd-amount");
   if (homeInput) {
     const monto = parseFloat(homeInput.value) || 0;
@@ -25,21 +28,6 @@ export function resetForm() {
   const munHidden = document.getElementById("recipient-municipality");
   if (provHidden) provHidden.value = "";
   if (munHidden) munHidden.value = "";
-
-  // Limpiar nuevos campos de dirección
-  const newFields = [
-    "recipient-street",
-    "recipient-street-between",
-    "recipient-building",
-    "recipient-house-number",
-    "recipient-neighborhood",
-    "recipient-latitude",
-    "recipient-longitude",
-  ];
-  newFields.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
 
   const display = document.getElementById("location-display");
   if (display) display.innerText = "";
