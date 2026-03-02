@@ -1,0 +1,777 @@
+/* =====================================================
+   PANEL ADMIN – Overrides para alineación con plataforma principal
+   Usa variables de styles.css (--primary, --dark-bg, --glass-*, etc.)
+   ===================================================== */
+
+/* Header compacto (no hero full-height) */
+body .panel-header,
+body:has(.panel-header) header {
+  height: auto;
+  min-height: auto;
+  padding: 1.25rem 1.5rem;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background: var(--dark-bg);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body header {
+  height: auto;
+  min-height: auto;
+  padding: 1.25rem 1.5rem;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background: var(--dark-bg);
+  background-image: none;
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body header::before {
+  display: none;
+}
+
+body header h1,
+body header p {
+  margin: 0;
+  text-shadow: none;
+}
+
+body header .panel-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+/* Main contenido */
+body main {
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Config container – tarjeta tipo glass como plataforma principal */
+.config-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.rate-card {
+  background: var(--surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.rate-card h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.rate-card input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  color: var(--text-main);
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.rate-card input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+#update-timer {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Dashboard grid de cards */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.dashboard .card {
+  background: var(--surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+  cursor: pointer;
+}
+
+.dashboard .card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 35px rgba(0, 169, 255, 0.15);
+}
+
+.dashboard .card h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dashboard .card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Botón dark mode en header */
+#dark-mode-btn {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.6rem;
+  font-size: 1.1rem;
+}
+
+#dark-mode-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* Modales – mismo estilo glass que plataforma principal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 25, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.modal .modal-content {
+  background: var(--surface-1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin: 2% auto;
+  padding: 2rem;
+  width: 90%;
+  max-width: 1100px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  animation: panelModalIn 0.3s ease;
+}
+
+@keyframes panelModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal .modal-content h2 {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.35rem;
+  color: var(--text-main);
+}
+
+.modal .close {
+  position: absolute;
+  right: 1.25rem;
+  top: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.modal .close:hover {
+  color: var(--text-main);
+}
+
+/* Tablas – legibles y alineadas */
+.table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+}
+
+#tabla-transacciones table,
+#tabla-conciliacion table,
+#tabla-logs table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+#tabla-transacciones th,
+#tabla-transacciones td,
+#tabla-conciliacion th,
+#tabla-conciliacion td,
+#tabla-logs th,
+#tabla-logs td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+#tabla-transacciones th,
+#tabla-conciliacion th,
+#tabla-logs th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+#tabla-transacciones th:hover,
+#tabla-conciliacion th:hover,
+#tabla-logs th:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#tabla-transacciones th.sort-asc::after,
+#tabla-conciliacion th.sort-asc::after,
+#tabla-logs th.sort-asc::after {
+  content: " ▲";
+  color: var(--primary);
+}
+
+#tabla-transacciones th.sort-desc::after,
+#tabla-conciliacion th.sort-desc::after,
+#tabla-logs th.sort-desc::after {
+  content: " ▼";
+  color: var(--primary);
+}
+
+#tabla-transacciones tbody tr:hover,
+#tabla-conciliacion tbody tr:hover,
+#tabla-logs tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.fila-pendiente {
+  background: rgba(220, 53, 69, 0.15);
+  border-left: 4px solid var(--error);
+}
+
+/* Badges y botones */
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badge-pending {
+  background: rgba(245, 158, 11, 0.25);
+  color: #f59e0b;
+}
+
+.badge-approved {
+  background: rgba(40, 167, 69, 0.25);
+  color: var(--success);
+}
+
+.badge-rejected {
+  background: rgba(220, 53, 69, 0.25);
+  color: var(--error);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#tabla-transacciones .btn-ver {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--primary);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+#tabla-transacciones button:hover {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+}
+
+/* Filtros y paginación */
+.filter-bar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--dark-bg);
+  color: var(--text-main);
+}
+
+/* Date range within filter-bar: flexible and responsive */
+.filter-bar .date-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.filter-bar .date-range input[type="date"] {
+  flex: 1 1 0;
+  min-width: 0; /* allow flex children to shrink */
+  cursor: pointer;
+}
+.filter-bar .date-range span {
+  white-space: nowrap;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.pagination-container button {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.pagination-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Métricas cards dentro del modal */
+.modal-metricas .card {
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.modal-metricas .card h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.modal-metricas .card p {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Conciliación inputs */
+#conc-confirmado,
+#conc-banco,
+#conc-obs {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  color: var(--text-main);
+}
+
+/* Imagen recibo en Swal */
+.img-recibo-modal {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+/* =====================================================
+   ESTILOS PARA DETALLES DE TRANSACCIÓN
+   ===================================================== */
+#modal-details .modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#modal-details h4 {
+  color: var(--primary);
+  margin: 15px 0 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#det-address p {
+  margin: 5px 0;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+#det-map {
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.btn-whatsapp:hover {
+  background-color: #25d366;
+  border-color: #25d366;
+  color: #fff;
+}
+
+/* =====================================================
+   GRÁFICOS Y ESTADÍSTICAS
+   ===================================================== */
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.chart-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+}
+
+.chart-card h3 {
+  margin: 0 0 15px 0;
+  color: var(--primary);
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.chart-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  background: rgba(0, 169, 255, 0.05);
+  border-radius: 8px;
+}
+
+.chart-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.chart-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 15px;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: var(--radius-md);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #28a745;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+   ===================================================== */
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .modal-content {
+    width: 95% !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body header {
+    padding: 1rem;
+  }
+
+  body header .panel-title {
+    font-size: 1.1rem;
+  }
+
+  .config-container {
+    flex-direction: column;
+  }
+
+  .rate-card {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rate-card > div {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding-left: 0 !important;
+    padding-top: 10px;
+  }
+
+  .rate-card > div:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-item {
+    padding: 8px;
+  }
+
+  .chart-value {
+    font-size: 16px;
+  }
+
+  .table-container table {
+    font-size: 12px;
+  }
+
+  .table-container table th,
+  .table-container table td {
+    padding: 8px 4px;
+  }
+
+  .modal-content {
+    width: 98% !important;
+    max-width: 98vw !important;
+    padding: 15px !important;
+  }
+
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+
+  #modal-details > .modal-content > div:nth-child(2) {
+    grid-template-columns: 1fr !important;
+  }
+
+  #det-map {
+    height: 200px !important;
+  }
+
+  .pagination-container {
+    /* Usar grid para mantener el texto centrado entre botones */
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pagination-container button {
+    width: auto;
+    min-width: 60px;
+  }
+
+  .pagination-container #page-info {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  body header {
+    padding: 0.75rem;
+  }
+
+  body header .panel-title {
+    font-size: 0.95rem;
+  }
+
+  .rate-card input {
+    width: 100% !important;
+  }
+
+  .rate-card button {
+    width: 100%;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .filter-bar input,
+  .filter-bar select {
+    width: 100%;
+  }
+
+  .filter-bar .date-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-bar .date-range span {
+    display: none;
+  }
+
+  .table-container table {
+    font-size: 11px;
+  }
+
+  .table-container table th,
+  .table-container table td {
+    padding: 6px 2px;
+  }
+
+  .chart-value {
+    font-size: 14px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+
+  /* Ocultar columnas innecesarias en móvil para la tabla de transacciones */
+  #tabla-transacciones th:nth-child(1),
+  #tabla-transacciones td:nth-child(1),
+  #tabla-transacciones th:nth-child(2),
+  #tabla-transacciones td:nth-child(2),
+  #tabla-transacciones th:nth-child(3),
+  #tabla-transacciones td:nth-child(3),
+  #tabla-transacciones th:nth-child(4),
+  #tabla-transacciones td:nth-child(4),
+  #tabla-transacciones th:nth-child(5),
+  #tabla-transacciones td:nth-child(5),
+  #tabla-transacciones th:nth-child(8),
+  #tabla-transacciones td:nth-child(8) {
+    display: none;
+  }
+}
