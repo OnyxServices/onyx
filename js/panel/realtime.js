@@ -1,6 +1,6 @@
 /** Real-time: suscripción a nuevas transacciones, sonido y notificación */
 
-import { showNewTransactionToast } from "../ui/swalUtils.js";
+import { showNewTransactionToast } from "../ui/utils/swalUtils.js";
 import { subscribeToInserts, unsubscribe } from "../api/realtimeApi.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;

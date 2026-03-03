@@ -2,8 +2,8 @@
  * Controlador de la UI para la Página de Inicio (Public)
  * Se encarga de actualizar el DOM con la información de configuración.
  */
-import { appStore } from "../store/appStore.js";
-import * as calculator from "../ui/calculator.js";
+import { appStore } from "../../store/appStore.js";
+import * as calculator from "../utils/calculator.js";
 
 export function updateHomeUI(config) {
   // Actualizar Tasa

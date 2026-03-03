@@ -1,8 +1,8 @@
 /** Modal de rastreo: abrir, cerrar, renderizar resultados */
 
-import { appStore } from "../store/appStore.js";
-import { searchTransactions } from "../services/transactionService.js";
-import { showWarning } from "./swalUtils.js";
+import { appStore } from "../../store/appStore.js";
+import { searchTransactions } from "../../services/transactionService.js";
+import { showWarning } from "../utils/swalUtils.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 

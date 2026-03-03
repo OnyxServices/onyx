@@ -1,6 +1,6 @@
 /** Calculadora: monto USD -> CUP en home y en modal */
 
-import { appStore } from "../store/appStore.js";
+import { appStore } from "../../store/appStore.js";
 
 export function actualizarCalculosHome(monto) {
   const tasa = appStore.tasaCambio;

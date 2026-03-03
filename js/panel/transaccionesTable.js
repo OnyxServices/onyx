@@ -6,7 +6,7 @@ import {
 } from "../services/transactionService.js";
 import { getAll as getConfigAll } from "../api/configApi.js";
 import { getPanelToast } from "./toast.js";
-import { showImageModal } from "../ui/swalUtils.js";
+import { showImageModal } from "../ui/utils/swalUtils.js";
 
 let paginaActual = 0;
 const itemsPorPagina = 10;

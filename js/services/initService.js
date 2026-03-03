@@ -3,8 +3,8 @@
 import { ensureClient } from "../api/supabaseClient.js";
 import { loadConfig } from "./configService.js";
 import { appStore } from "../../js/store/appStore.js";
-import * as loader from "../../js/ui/loader.js";
-import * as calculator from "../../js/ui/calculator.js";
+import * as loader from "../../js/ui/utils/loader.js";
+import * as calculator from "../../js/ui/utils/calculator.js";
 
 export async function iniciar() {
   const startTime = Date.now();

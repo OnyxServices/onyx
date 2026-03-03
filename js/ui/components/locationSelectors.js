@@ -1,7 +1,7 @@
 /** Selectores de provincia y municipio (custom select) */
 
 import { appStore } from "../../store/appStore.js";
-import { createCustomSelect } from "../customSelect.js";
+import { createCustomSelect } from "../utils/customSelect.js";
 import {
   getRegiones,
   getProvinciaOptions,

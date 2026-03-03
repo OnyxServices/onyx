@@ -10,25 +10,25 @@ import { setupLocationSelectors } from "./ui/components/locationSelectors.js";
 import {
   actualizarCalculosHome,
   actualizarCupEnModal,
-} from "./ui/calculator.js";
+} from "./ui/utils/calculator.js";
 import {
   abrirModal,
   cerrarModal,
   nextStep,
   copiarZelle,
   copiarPropietario,
-} from "./ui/modalTransfer.js";
+} from "./ui/components/modalTransfer.js";
 import {
   abrirModalTracking,
   cerrarModalTracking,
   buscarTransaccion,
-} from "./ui/modalTracking.js";
+} from "./ui/components/modalTracking.js";
 import { resetForm, getFormData } from "./ui/components/transferForm.js";
-import { resetCustomSelects } from "./ui/customSelect.js";
+import { resetCustomSelects } from "./ui/utils/customSelect.js";
 import { submitTransaction } from "./services/transactionService.js";
 import { validateTransferForm } from "./validators/formValidators.js";
-import { showError, showSuccess } from "./ui/swalUtils.js";
-import { initializeStatusIndicator } from "./ui/statusIndicator.js";
+import { showError, showSuccess } from "./ui/utils/swalUtils.js";
+import { initializeStatusIndicator } from "./ui/components/statusIndicator.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 

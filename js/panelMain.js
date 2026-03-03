@@ -27,7 +27,7 @@ import {
   enviarWA_Remitente,
   enviarWA_Destinatario,
 } from "./panel/transactionDetails.js";
-import { initializeStatusIndicator } from "./ui/statusIndicator.js";
+import { initializeStatusIndicator } from "./ui/components/statusIndicator.js";
 
 let segundosParaRefresco = 15;
 

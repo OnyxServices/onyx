@@ -1,13 +1,13 @@
 /** Modal de transferencia: abrir, cerrar, nextStep. Depende de Swal y del form. */
 
-import { resetForm } from "./components/transferForm.js";
-import { resetCustomSelects } from "./customSelect.js";
+import { resetForm } from "./transferForm.js";
+import { resetCustomSelects } from "../utils/customSelect.js";
 import {
   validateNombreApellidos,
   validateWhatsAppUS,
   validateWhatsAppCuba,
-} from "../validators/formValidators.js";
-import { showWarning, showSuccessToast } from "./swalUtils.js";
+} from "../../validators/formValidators.js";
+import { showWarning, showSuccessToast } from "../utils/swalUtils.js";
 
 export function abrirModal() {
   const notification = document.getElementById("fab-notification");
