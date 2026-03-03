@@ -1,6 +1,6 @@
 /** Formulario de transferencia: reset, sincronizar con calculadora */
 
-import { actualizarCalculosHome } from "../ui/calculator.js";
+import { actualizarCalculosHome } from "../calculator.js";
 
 export function resetForm() {
   const form = document.getElementById("transaction-form");

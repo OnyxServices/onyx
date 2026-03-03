@@ -1,7 +1,12 @@
 /** Selectores de provincia y municipio (custom select) */
 
-import { appStore } from "../store/appStore.js";
-import { createCustomSelect } from "../ui/customSelect.js";
+import { appStore } from "../../store/appStore.js";
+import { createCustomSelect } from "../customSelect.js";
+import {
+  getRegiones,
+  getProvinciaOptions,
+  getMunicipiosForProvincia,
+} from "../../services/locationService.js";
 
 export function setupLocationSelectors(regiones) {
   if (appStore.customSelectsInitialized) return;
@@ -22,22 +27,18 @@ export function setupLocationSelectors(regiones) {
     return;
   }
 
-  const regionesCuba =
-    regiones && regiones.length ? regiones : appStore.regionesCuba;
+  const regionesCuba = regiones || getRegiones();
   if (!regionesCuba.length) {
     console.warn("No hay regiones cargadas para los selectores.");
     return;
   }
 
-  const provinciaOptions = regionesCuba.map((r) => ({
-    value: r.province,
-    label: r.province,
-  }));
+  const provinciaOptions = getProvinciaOptions(regionesCuba);
 
   const municipioControl = createCustomSelect(municipioSelect, {
     placeholder: municipioSelect.dataset.placeholder || "Seleccione municipio",
     options: [],
-    disabled: true, // Inicialmente deshabilitado
+    disabled: true,
     onChange: (value) => {
       municipioHidden.value = value || "";
     },
@@ -48,14 +49,9 @@ export function setupLocationSelectors(regiones) {
     options: provinciaOptions,
     onChange: (value) => {
       provinciaHidden.value = value || "";
-      const region = regionesCuba.find(
-        (r) => r.province.toLowerCase() === (value || "").toLowerCase(),
-      );
-      const munOptions = region
-        ? region.municipalities.map((m) => ({ value: m, label: m }))
-        : [];
+      const munOptions = getMunicipiosForProvincia(value, regionesCuba);
       municipioControl.setOptions(munOptions);
-      municipioControl.setDisabled(!value); // Deshabilitar si no hay provincia
+      municipioControl.setDisabled(!value);
       municipioHidden.value = "";
     },
   });

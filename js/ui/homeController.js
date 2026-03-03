@@ -19,7 +19,7 @@ export function updateHomeUI(config) {
 
   if (zelleAcc) zelleAcc.textContent = appStore.cuentaZelle;
   if (zelleOwner) zelleOwner.textContent = appStore.propietarioZelle;
-  
+
   if (zelleOwnerContainer) {
     zelleOwnerContainer.style.display = appStore.propietarioZelle
       ? "flex"

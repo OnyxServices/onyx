@@ -1,6 +1,6 @@
 /** Modal de transferencia: abrir, cerrar, nextStep. Depende de Swal y del form. */
 
-import { resetForm } from "../components/transferForm.js";
+import { resetForm } from "./components/transferForm.js";
 import { resetCustomSelects } from "./customSelect.js";
 import {
   validateNombreApellidos,

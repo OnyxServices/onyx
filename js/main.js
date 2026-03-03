@@ -6,7 +6,7 @@
 import { CUBA_REGIONS } from "../data/regions.js";
 import { appStore } from "./store/appStore.js";
 import { iniciar } from "./services/initService.js";
-import { setupLocationSelectors } from "./components/locationSelectors.js";
+import { setupLocationSelectors } from "./ui/components/locationSelectors.js";
 import {
   actualizarCalculosHome,
   actualizarCupEnModal,
@@ -23,7 +23,7 @@ import {
   cerrarModalTracking,
   buscarTransaccion,
 } from "./ui/modalTracking.js";
-import { resetForm, getFormData } from "./components/transferForm.js";
+import { resetForm, getFormData } from "./ui/components/transferForm.js";
 import { resetCustomSelects } from "./ui/customSelect.js";
 import { submitTransaction } from "./services/transactionService.js";
 import { validateTransferForm } from "./validators/formValidators.js";
