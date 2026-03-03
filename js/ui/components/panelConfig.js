@@ -1,9 +1,8 @@
-/** Configuración del panel: tasa y Zelle */
+/** Componente UI: Configuración del panel (tasa Zelle) */
 
-import { loadConfig, updateConfig } from "../services/configService.js";
-import { appStore } from "../store/appStore.js";
-import { getPanelToast } from "./toast.js";
-import { validateZelleUS } from "../validators/formValidators.js";
+import { loadConfig, updateConfig } from "../../services/configService.js";
+import { getPanelToast } from "../utils/panelToast.js";
+import { validateZelleUS } from "../../validators/formValidators.js";
 
 let configId = 2; // TODO: Esto debería venir dinámicamente o ser una constante global
 
@@ -13,7 +12,7 @@ let configId = 2; // TODO: Esto debería venir dinámicamente o ser una constant
 export async function cargarTasa() {
   try {
     const config = await loadConfig();
-    
+
     // Actualizar Inputs
     const tasaEl = document.getElementById("tasa_cambio");
     const zelleEl = document.getElementById("zelle_cuenta");
@@ -52,14 +51,15 @@ export async function actualizarConfig(refreshAll) {
       zelle_cuenta: zelle,
       zelle_owner: owner,
     });
-    
-    // Actualizar UI tras éxito (aunque el servicio ya actualizó el store, los inputs ya tienen el valor)
-    // Pero si hubiera formateo o confirmación visual, iría aquí.
-    
+
     if (Toast) Toast.fire({ icon: "success", title: "Configuración guardada" });
     if (typeof refreshAll === "function") await refreshAll();
   } catch (err) {
     console.error(err);
-    if (Toast) Toast.fire({ icon: "error", title: err.message || "Error al actualizar" });
+    if (Toast)
+      Toast.fire({
+        icon: "error",
+        title: err.message || "Error al actualizar",
+      });
   }
 }

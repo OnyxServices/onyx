@@ -1,12 +1,12 @@
-/** Tabla de transacciones del panel: filtros, paginación, cambiar estado */
+/** Componente UI: Tabla de transacciones del panel */
 
 import {
   listTransactions,
   updateTransaction,
-} from "../services/transactionService.js";
-import { getAll as getConfigAll } from "../api/configApi.js";
-import { getPanelToast } from "./toast.js";
-import { showImageModal } from "../ui/utils/swalUtils.js";
+} from "../../services/transactionService.js";
+import { getAll as getConfigAll } from "../../api/configApi.js";
+import { getPanelToast } from "../utils/panelToast.js";
+import { showImageModal } from "../utils/swalUtils.js";
 
 let paginaActual = 0;
 const itemsPorPagina = 10;

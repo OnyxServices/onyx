@@ -1,9 +1,9 @@
-/** Gráficos informativos del panel: día y mes */
+/** Servicio de gráficos del panel: cálculos de día y mes */
 
-import { listTransactions } from "../services/transactionService.js";
+import { listTransactions } from "./transactionService.js";
 import { getAll as getConfigAll } from "../api/configApi.js";
 
-export async function cargarGraficos() {
+export async function calcularGraficosData() {
   const hoy = new Date();
   const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
   const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
@@ -52,27 +52,25 @@ export async function cargarGraficos() {
   const totalCupMes = totalUsdMes * tasa;
   const cantidadMes = (txMes || []).length;
 
-  // Actualizar gráficos del día
-  document.getElementById("chart-day-qty").innerText = cantidadHoy;
-  document.getElementById("chart-day-usd").innerText =
-    `$${totalUsdHoy.toFixed(2)}`;
-  document.getElementById("chart-day-cup").innerText =
-    `${totalCupHoy.toLocaleString("es-CU")} CUP`;
-
-  // Actualizar gráficos del mes
-  document.getElementById("chart-month-qty").innerText = cantidadMes;
-  document.getElementById("chart-month-usd").innerText =
-    `$${totalUsdMes.toFixed(2)}`;
-  document.getElementById("chart-month-cup").innerText =
-    `${totalCupMes.toLocaleString("es-CU")} CUP`;
-
   // Calcular promedio diario
   const promedioDia =
     cantidadMes > 0 ? (cantidadMes / hoy.getDate()).toFixed(1) : 0;
-  document.getElementById("chart-avg-day").innerText = `${promedioDia} tx/día`;
 
   // Proyección de mes
   const proyeccionMes = Math.round((totalUsdMes / hoy.getDate()) * 30);
-  document.getElementById("chart-projection").innerText =
-    `$${proyeccionMes.toFixed(2)}`;
+
+  return {
+    dia: {
+      cantidad: cantidadHoy,
+      usd: totalUsdHoy,
+      cup: totalCupHoy,
+    },
+    mes: {
+      cantidad: cantidadMes,
+      usd: totalUsdMes,
+      cup: totalCupMes,
+      promedioDia,
+      proyeccionMes,
+    },
+  };
 }

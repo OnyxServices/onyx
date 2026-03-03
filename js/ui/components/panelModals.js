@@ -1,4 +1,4 @@
-/** Modales del panel: abrir/cerrar por id */
+/** Componente UI: Modales del panel */
 
 export function abrirModal(id, onOpen) {
   const el = document.getElementById(id);
