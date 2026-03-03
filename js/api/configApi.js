@@ -19,7 +19,11 @@ export async function getAll(filters = {}) {
 
 export async function getById(id) {
   ensureClient();
-  const res = await supabaseClient.from("config").select("*").eq("id", id).single();
+  const res = await supabaseClient
+    .from("config")
+    .select("*")
+    .eq("id", id)
+    .single();
   if (res.error) throw res.error;
   return res.data;
 }

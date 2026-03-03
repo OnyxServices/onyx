@@ -4,7 +4,6 @@ import { listTransactions } from "../services/transactionService.js";
 import { getAll as getConfigAll } from "../api/configApi.js";
 
 export async function cargarGraficos() {
-
   const hoy = new Date();
   const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
   const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
@@ -32,7 +31,9 @@ export async function cargarGraficos() {
   let tasa = 24;
   if (cfgResp && cfgResp.data) {
     const cfg = cfgResp.data;
-    tasa = Array.isArray(cfg) ? cfg[0]?.exchange_rate || 24 : cfg.exchange_rate || 24;
+    tasa = Array.isArray(cfg)
+      ? cfg[0]?.exchange_rate || 24
+      : cfg.exchange_rate || 24;
   }
 
   // Calcular totales del día

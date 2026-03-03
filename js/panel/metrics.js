@@ -16,7 +16,8 @@ export async function cargarMetricas() {
   let cup = 0;
   txs.forEach((tx) => {
     usd += parseFloat(tx.usd_amount) || 0;
-    cup += (parseFloat(tx.usd_amount) || 0) * (parseFloat(tx.exchange_rate) || 0);
+    cup +=
+      (parseFloat(tx.usd_amount) || 0) * (parseFloat(tx.exchange_rate) || 0);
   });
 
   const cantidadEl = document.getElementById("m-cantidad");

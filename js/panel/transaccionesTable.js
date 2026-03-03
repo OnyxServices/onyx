@@ -39,7 +39,6 @@ export async function cargarTransacciones(refreshAll) {
 }
 
 export async function cargarTransaccionesPaginadas(refreshAll) {
-
   const search = document.getElementById("f-search")?.value ?? "";
   const estado = document.getElementById("f-estado")?.value ?? "todos";
   const inicio = document.getElementById("f-inicio")?.value ?? "";
@@ -64,7 +63,9 @@ export async function cargarTransaccionesPaginadas(refreshAll) {
   let tasa = 0;
   if (cfgResp && cfgResp.data) {
     const cfg = cfgResp.data;
-    tasa = Array.isArray(cfg) ? cfg[0]?.exchange_rate || 0 : cfg.exchange_rate || 0;
+    tasa = Array.isArray(cfg)
+      ? cfg[0]?.exchange_rate || 0
+      : cfg.exchange_rate || 0;
   }
 
   // Ordenar transacciones
@@ -202,7 +203,10 @@ export function verRecibo(url) {
 }
 
 export async function exportarCSV() {
-  const { data } = await listTransactions({ state: "approved", pageSize: null });
+  const { data } = await listTransactions({
+    state: "approved",
+    pageSize: null,
+  });
   let csv = "Fecha,Remitente,Beneficiario,Monto USD\n";
   (data || []).forEach(
     (r) =>

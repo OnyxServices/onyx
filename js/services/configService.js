@@ -9,7 +9,7 @@ import { appStore } from "../store/appStore.js";
 export async function loadConfig() {
   const resp = await configGetAll({ limit: 1 });
   const data = resp?.data;
-  const config = Array.isArray(data) ? data[0] : data ?? {};
+  const config = Array.isArray(data) ? data[0] : (data ?? {});
   appStore.tasaCambio = config.exchange_rate ?? 0;
   appStore.cuentaZelle = config.zelle_cuenta ?? "pago@fastcuba.com";
   appStore.propietarioZelle = config.zelle_owner ?? "";

@@ -12,7 +12,10 @@ import { uploadProof } from "../api/storageApi.js";
 
 export async function submitTransaction(formData, proofFile) {
   if (!proofFile || !proofFile.size) {
-    return { success: false, error: "Debes subir la foto de la transferencia." };
+    return {
+      success: false,
+      error: "Debes subir la foto de la transferencia.",
+    };
   }
 
   const montoUsd = parseFloat(formData.usd_amount) || 0;
@@ -61,7 +64,11 @@ export async function submitTransaction(formData, proofFile) {
 
 export async function searchTransactions(whatsapp, limit = 5) {
   // Lógica: buscar por número en remitente o destinatario
-  const { data } = await txGetAll({ search: whatsapp, page: 0, pageSize: limit });
+  const { data } = await txGetAll({
+    search: whatsapp,
+    page: 0,
+    pageSize: limit,
+  });
   return data ?? [];
 }
 
@@ -80,7 +87,8 @@ export async function getTransactionById(id) {
 
 export async function updateTransaction(id, changes) {
   if (!id) throw new Error("ID inválido");
-  if (!changes || typeof changes !== "object") throw new Error("Cambios inválidos");
+  if (!changes || typeof changes !== "object")
+    throw new Error("Cambios inválidos");
   return await txUpdate(id, changes);
 }
 
