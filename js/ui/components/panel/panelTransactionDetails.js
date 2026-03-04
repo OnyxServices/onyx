@@ -1,31 +1,26 @@
-/** Componente UI: Detalles de transacción del panel */
+/**
+ * COMPONENTE UI: Detalles de transacción del panel
+ *
+ * Este archivo SOLO contiene funciones PASIVAS que:
+ * - Reciben datos por parámetros
+ * - Actualizan el DOM
+ * - NO hacen llamadas a servicios
+ * - NO manejan errores de red
+ *
+ * La orquestación (servicios + estado) va en panelMain.js
+ */
 
-import { getTransactionById } from "../../../services/transactionService.js";
 import { getPanelToast } from "../../utils/panelToast.js";
-import {
-  generarPDFTransaccion,
-  enviarWhatsAppTransaccion,
-} from "../../../services/panelTransactionDetailsService.js";
 
-const Swal = typeof window !== "undefined" ? window.Swal : null;
-
-let currentTransaction = null;
 let detailsMap = null;
 
-export async function abrirDetallesTransaccion(transactionId) {
-  try {
-    const data = await getTransactionById(transactionId);
-    currentTransaction = data;
-    cargarDetallesEnModal(data);
-    const modal = document.getElementById("modal-details");
-    if (modal) modal.style.display = "flex";
-  } catch (err) {
-    const Toast = getPanelToast();
-    if (Toast) Toast.fire({ icon: "error", title: "Error al cargar datos" });
-  }
-}
+/**
+ * Función PASIVA: Renderiza detalles en el modal
+ * @param {Object} tx - Transacción con todos los datos
+ */
+export function mostrarDetallesTransaccion(tx) {
+  if (!tx) return;
 
-function cargarDetallesEnModal(tx) {
   // Información del remitente
   document.getElementById("det-sender").innerText = tx.sender_name || "-";
   document.getElementById("det-sender-wa").innerText =
@@ -62,13 +57,27 @@ function cargarDetallesEnModal(tx) {
   const mapContainer = document.getElementById("det-map-container");
   if (tx.recipient_latitude && tx.recipient_longitude) {
     mapContainer.style.display = "block";
-    inicializarMapaDetalles(tx.recipient_latitude, tx.recipient_longitude);
+    renderMapaDetalles(
+      tx.recipient_latitude,
+      tx.recipient_longitude,
+      tx.recipient_name,
+    );
   } else {
     mapContainer.style.display = "none";
   }
+
+  // Mostrar modal
+  const modal = document.getElementById("modal-details");
+  if (modal) modal.style.display = "flex";
 }
 
-function inicializarMapaDetalles(lat, lng) {
+/**
+ * Función PASIVA: Renderiza el mapa con coordenadas
+ * @param {number} lat - Latitud
+ * @param {number} lng - Longitud
+ * @param {string} recipientName - Nombre del destinatario
+ */
+function renderMapaDetalles(lat, lng, recipientName) {
   if (detailsMap) {
     detailsMap.remove();
   }
@@ -78,51 +87,33 @@ function inicializarMapaDetalles(lat, lng) {
     attribution: "© OpenStreetMap contributors",
   }).addTo(detailsMap);
 
-  L.marker([lat, lng])
-    .addTo(detailsMap)
-    .bindPopup(`<b>${currentTransaction.recipient_name}</b>`);
+  L.marker([lat, lng]).addTo(detailsMap).bindPopup(`<b>${recipientName}</b>`);
 }
 
-export async function generarPDF() {
-  if (!currentTransaction) return;
-
-  try {
-    await generarPDFTransaccion(currentTransaction);
-    const Toast = getPanelToast();
-    if (Toast)
-      Toast.fire({ icon: "success", title: "PDF generado correctamente" });
-  } catch (err) {
-    const Toast = getPanelToast();
-    if (Toast) Toast.fire({ icon: "error", title: "Error al generar PDF" });
-  }
+/**
+ * Función PASIVA: Oculta el modal
+ */
+export function ocultarDetallesTransaccion() {
+  const modal = document.getElementById("modal-details");
+  if (modal) modal.style.display = "none";
 }
 
-export async function enviarWA_Remitente() {
-  if (!currentTransaction) return;
-
-  try {
-    await enviarWhatsAppTransaccion(currentTransaction, "remitente");
-    const Toast = getPanelToast();
-    if (Toast)
-      Toast.fire({ icon: "success", title: "Mensaje enviado al remitente" });
-  } catch (err) {
-    const Toast = getPanelToast();
-    if (Toast)
-      Toast.fire({ icon: "error", title: err.message || "Error al enviar" });
-  }
+/**
+ * Función PASIVA: Muestra error genérico en modal
+ * @param {string} titulo - Título del error
+ * @param {string} mensaje - Mensaje del error
+ */
+export function mostrarErrorDetalles(titulo, mensaje) {
+  const Toast = getPanelToast();
+  if (Toast) Toast.fire({ icon: "error", title: titulo, text: mensaje });
 }
 
-export async function enviarWA_Destinatario() {
-  if (!currentTransaction) return;
-
-  try {
-    await enviarWhatsAppTransaccion(currentTransaction, "destinatario");
-    const Toast = getPanelToast();
-    if (Toast)
-      Toast.fire({ icon: "success", title: "Mensaje enviado al destinatario" });
-  } catch (err) {
-    const Toast = getPanelToast();
-    if (Toast)
-      Toast.fire({ icon: "error", title: err.message || "Error al enviar" });
-  }
+/**
+ * Función PASIVA: Muestra éxito genérico
+ * @param {string} titulo - Título del mensaje
+ * @param {string} mensaje - Mensaje de éxito
+ */
+export function mostrarExitoDetalles(titulo, mensaje) {
+  const Toast = getPanelToast();
+  if (Toast) Toast.fire({ icon: "success", title: titulo, text: mensaje });
 }

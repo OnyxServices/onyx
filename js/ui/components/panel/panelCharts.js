@@ -1,9 +1,21 @@
-/** Componente UI: Gráficos informativos del panel */
+/**
+ * COMPONENTE UI: Gráficos informativos del panel
+ *
+ * SOLO funciones PASIVAS que:
+ * - Reciben datos por parámetros
+ * - Actualizan el DOM
+ * - NO hacen llamadas a servicios
+ * - NO manejan errores de red
+ *
+ * La orquestación (servicios) va en panelChartsController.js
+ */
 
-import { calcularGraficosData } from "../../../services/panelChartsService.js";
-
-export async function cargarGraficos() {
-  const data = await calcularGraficosData();
+/**
+ * Función PASIVA: Renderiza gráficos con datos
+ * @param {Object} data - Datos de gráficos { day: {...}, month: {...} }
+ */
+export function renderCharts(data) {
+  if (!data) return;
 
   // Actualizar gráficos del día
   const chartDayQty = document.getElementById("chart-day-qty");
@@ -33,4 +45,12 @@ export async function cargarGraficos() {
   const chartProjection = document.getElementById("chart-projection");
   if (chartProjection)
     chartProjection.innerText = `$${data.month.projection.toFixed(2)}`;
+}
+
+/**
+ * Función PASIVA: Muestra error en gráficos
+ */
+export function showChartsError() {
+  // Puedes mostrar un mensaje genérico o dejar los gráficos vacíos
+  console.log("Error cargando gráficos");
 }

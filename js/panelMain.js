@@ -9,11 +9,11 @@ import {
   setupGlobalModalClose,
 } from "./ui/components/panel/panelModals.js";
 import {
-  cargarTasa,
-  actualizarConfig,
-} from "./ui/components/panel/panelConfig.js";
-import { cargarMetricas } from "./ui/components/panel/panelMetrics.js";
-import { cargarGraficos } from "./ui/components/panel/panelCharts.js";
+  orchestrateLoadConfig,
+  orchestrateUpdateConfig,
+} from "./controllers/panelConfigController.js";
+import { orchestrateLoadMetrics } from "./controllers/panelMetricsController.js";
+import { orchestrateLoadCharts } from "./controllers/panelChartsController.js";
 import {
   cargarTransacciones,
   resetYPaginación,
@@ -22,28 +22,29 @@ import {
   verRecibo,
   exportarCSV,
   setSort,
-} from "./ui/components/panel/panelTransaccionesTable.js";
+} from "./controllers/panelTransaccionesController.js";
 import {
   subscribeRealtime,
   setupAudioUnlock,
 } from "./ui/components/panel/panelRealtime.js";
 import {
-  abrirDetallesTransaccion,
-  generarPDF,
-  enviarWA_Remitente,
-  enviarWA_Destinatario,
-} from "./ui/components/panel/panelTransactionDetails.js";
+  orchestrateOpenDetails,
+  orchestrateCloseDetails,
+  orchestrateGeneratePDF,
+  orchestrateSendWA_Sender,
+  orchestrateSendWA_Recipient,
+} from "./controllers/panelTransactionDetailsController.js";
 import { initializeStatusIndicator } from "./ui/components/statusIndicator.js";
 
 let segundosParaRefresco = 15;
 
 async function refreshAll() {
   await cargarTransacciones(refreshAll);
-  await cargarMetricas();
+  await orchestrateLoadMetrics();
 }
 
 function onOpenModal(id) {
-  if (id === "modal-metricas") cargarGraficos();
+  if (id === "modal-metricas") orchestrateLoadCharts();
 }
 
 function abrirModalConCarga(id) {
@@ -63,7 +64,7 @@ setInterval(() => {
 }, 1000);
 
 document.addEventListener("DOMContentLoaded", () => {
-  cargarTasa();
+  orchestrateLoadConfig();
   refreshAll();
   subscribeRealtime(refreshAll);
 
@@ -74,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Exponer para onclick en HTML
 window.abrirModal = abrirModalConCarga;
 window.cerrarModal = (id) => cerrarModal(id);
-window.actualizarConfig = () => actualizarConfig(refreshAll);
+window.actualizarConfig = () => orchestrateUpdateConfig(refreshAll);
 window.refreshAll = refreshAll;
 window.resetYPaginación = () => {
   resetYPaginación();
@@ -85,7 +86,8 @@ window.cambiarPagina = (delta) => cambiarPagina(delta, refreshAll);
 window.cambiarEstado = (id, estado) => cambiarEstado(id, estado, refreshAll);
 window.verRecibo = verRecibo;
 window.exportarCSV = exportarCSV;
-window.abrirDetallesTransaccion = abrirDetallesTransaccion;
-window.generarPDF = generarPDF;
-window.enviarWA_Remitente = enviarWA_Remitente;
-window.enviarWA_Destinatario = enviarWA_Destinatario;
+window.abrirDetallesTransaccion = orchestrateOpenDetails;
+window.cerrarDetallesTransaccion = orchestrateCloseDetails;
+window.generarPDF = orchestrateGeneratePDF;
+window.enviarWA_Remitente = orchestrateSendWA_Sender;
+window.enviarWA_Destinatario = orchestrateSendWA_Recipient;

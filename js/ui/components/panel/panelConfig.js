@@ -1,65 +1,65 @@
-/** Componente UI: Configuración del panel (tasa Zelle) */
+/**
+ * COMPONENTE UI: Configuración del panel (tasa Zelle)
+ *
+ * SOLO funciones PASIVAS que:
+ * - Reciben datos por parámetros
+ * - Actualizan el DOM
+ * - NO hacen llamadas a servicios
+ * - NO manejan errores de red
+ *
+ * La orquestación (servicios + estado) va en panelConfigController.js
+ */
 
-import { loadConfig, updateConfig } from "../../../services/configService.js";
 import { getPanelToast } from "../../utils/panelToast.js";
-import { validateZelleUS } from "../../../validators/formValidators.js";
-
-let configId = 2; // TODO: Esto debería venir dinámicamente o ser una constante global
 
 /**
- * Carga la configuración y actualiza los campos del formulario.
+ * Función PASIVA: Actualiza los campos del formulario con configuración
+ * @param {Object} config - Datos de configuración { tasaCambio, cuentaZelle, propietarioZelle }
  */
-export async function cargarTasa() {
-  try {
-    const config = await loadConfig();
+export function updateConfigUI(config) {
+  if (!config) return;
 
-    // Actualizar Inputs
-    const tasaEl = document.getElementById("tasa_cambio");
-    const zelleEl = document.getElementById("zelle_cuenta");
-    const ownerEl = document.getElementById("zelle_owner");
+  const tasaEl = document.getElementById("tasa_cambio");
+  const zelleEl = document.getElementById("zelle_cuenta");
+  const ownerEl = document.getElementById("zelle_owner");
 
-    if (tasaEl) tasaEl.value = config.tasaCambio;
-    if (zelleEl) zelleEl.value = config.cuentaZelle || "";
-    if (ownerEl) ownerEl.value = config.propietarioZelle || "";
-  } catch (err) {
-    console.error("Error cargando configuración:", err);
-    const Toast = getPanelToast();
-    if (Toast) Toast.fire({ icon: "error", title: "Error cargando datos" });
-  }
+  if (tasaEl) tasaEl.value = config.tasaCambio;
+  if (zelleEl) zelleEl.value = config.cuentaZelle || "";
+  if (ownerEl) ownerEl.value = config.propietarioZelle || "";
 }
 
-export async function actualizarConfig(refreshAll) {
-  const tasa = parseFloat(document.getElementById("tasa_cambio")?.value);
-  const zelle = (document.getElementById("zelle_cuenta")?.value ?? "").trim();
-  const owner = (document.getElementById("zelle_owner")?.value ?? "").trim();
+/**
+ * Función PASIVA: Muestra error de configuración
+ * @param {string} mensaje - Mensaje de error
+ */
+export function showErrorConfig(mensaje) {
   const Toast = getPanelToast();
+  if (Toast) Toast.fire({ icon: "error", title: mensaje });
+}
 
-  const zelleValidation = validateZelleUS(zelle);
-  if (!zelleValidation.valid) {
-    if (Toast) Toast.fire({ icon: "error", title: zelleValidation.message });
-    const zelleEl = document.getElementById("zelle_cuenta");
-    if (zelleEl) zelleEl.style.borderColor = "var(--error, #ef4444)";
-    return;
-  }
+/**
+ * Función PASIVA: Muestra éxito de configuración
+ * @param {string} mensaje - Mensaje de éxito
+ */
+export function showSuccessConfig(mensaje) {
+  const Toast = getPanelToast();
+  if (Toast) Toast.fire({ icon: "success", title: mensaje });
+}
 
-  const zelleEl = document.getElementById("zelle_cuenta");
-  if (zelleEl) zelleEl.style.borderColor = "";
+/**
+ * Función PASIVA: Resalta error en campo
+ * @param {string} fieldId - ID del campo
+ */
+export function highlightError(fieldId) {
+  const el = document.getElementById(fieldId);
+  if (el) el.style.borderColor = "var(--error, #ef4444)";
+}
 
-  try {
-    await updateConfig(configId, {
-      exchange_rate: tasa,
-      zelle_cuenta: zelle,
-      zelle_owner: owner,
-    });
-
-    if (Toast) Toast.fire({ icon: "success", title: "Configuración guardada" });
-    if (typeof refreshAll === "function") await refreshAll();
-  } catch (err) {
-    console.error(err);
-    if (Toast)
-      Toast.fire({
-        icon: "error",
-        title: err.message || "Error al actualizar",
-      });
-  }
+/**
+ * Función PASIVA: Limpia error visual en campo
+ * @param {string} fieldId - ID del campo
+ */
+export function clearError(fieldId) {
+  const el = document.getElementById(fieldId);
+  if (el) el.style.borderColor = "";
 }

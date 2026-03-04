@@ -14,21 +14,6 @@ export async function loadConfig() {
   appStore.cuentaZelle = config.zelle_cuenta ?? "pago@fastcuba.com";
   appStore.propietarioZelle = config.zelle_owner ?? "";
 
-  // Actualizar DOM si existe
-  const zelleAcc = document.getElementById("zelle-account");
-  const zelleOwner = document.getElementById("zelle-owner");
-  const zelleOwnerContainer = document.getElementById("zelle-owner-container");
-  const homeTasaVal = document.getElementById("home-value-rate");
-
-  if (zelleAcc) zelleAcc.textContent = appStore.cuentaZelle;
-  if (zelleOwner) zelleOwner.textContent = appStore.propietarioZelle;
-  if (zelleOwnerContainer) {
-    zelleOwnerContainer.style.display = appStore.propietarioZelle
-      ? "flex"
-      : "none";
-  }
-  if (homeTasaVal) homeTasaVal.textContent = `${appStore.tasaCambio} CUP`;
-
   return {
     tasaCambio: appStore.tasaCambio,
     cuentaZelle: appStore.cuentaZelle,

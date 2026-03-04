@@ -176,9 +176,10 @@ export async function generarPDFTransaccion(tx) {
 }
 
 /**
- * Envía mensaje por WhatsApp a remitente o destinatario
+ * Genera URLs de WhatsApp (JS puro, sin window.open)
+ * El controller se encarga de abrir el navegador
  */
-export async function enviarWhatsAppTransaccion(tx, tipo = "remitente") {
+export async function generarWhatsAppURL(tx, tipo = "remitente") {
   if (tipo === "remitente") {
     const senderWA = tx.sender_whatsapp?.replace(/\D/g, "") || "";
 
@@ -213,10 +214,9 @@ Dirección: ${fullAddress}
 Gracias por confiar en nosotros
 `.trim();
 
-    const urlRemitente = `https://wa.me/${senderWA}?text=${encodeURIComponent(
+    return `https://wa.me/${senderWA}?text=${encodeURIComponent(
       `Hola ${tx.sender_name}, ${mensajeTexto}`,
     )}`;
-    window.open(urlRemitente, "_blank");
   } else if (tipo === "destinatario") {
     const recipientWA = tx.recipient_whatsapp?.replace(/\D/g, "") || "";
 
@@ -252,9 +252,8 @@ Dirección de entrega: ${fullAddress}
 Gracias por confiar en nosotros
 `.trim();
 
-    const urlDestinatario = `https://wa.me/${recipientWA}?text=${encodeURIComponent(
+    return `https://wa.me/${recipientWA}?text=${encodeURIComponent(
       `Hola ${tx.recipient_name}, ${mensajeTexto}`,
     )}`;
-    window.open(urlDestinatario, "_blank");
   }
 }

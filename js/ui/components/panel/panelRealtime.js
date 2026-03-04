@@ -1,7 +1,10 @@
 /** Componente UI: Real-time del panel (suscripción a nuevas transacciones) */
 
 import { showNewTransactionToast } from "../../utils/swalUtils.js";
-import { subscribeToInserts, unsubscribe } from "../../../api/realtimeApi.js";
+import {
+  subscribeToTransactionInserts,
+  unsubscribeFromRealtime,
+} from "../../../services/realtimeService.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 
@@ -31,7 +34,7 @@ function notificarNuevaTransaccion(datos) {
 }
 
 export function subscribeRealtime(onRefresh) {
-  const channel = subscribeToInserts("transacciones", (newRow) => {
+  const channel = subscribeToTransactionInserts((newRow) => {
     notificarNuevaTransaccion(newRow);
     if (typeof onRefresh === "function") onRefresh();
   });
@@ -39,5 +42,5 @@ export function subscribeRealtime(onRefresh) {
 }
 
 export function unsubscribeRealtime(channel) {
-  unsubscribe(channel);
+  unsubscribeFromRealtime(channel);
 }
