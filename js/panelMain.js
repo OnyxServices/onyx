@@ -7,10 +7,13 @@ import {
   abrirModal,
   cerrarModal,
   setupGlobalModalClose,
-} from "./ui/components/panelModals.js";
-import { cargarTasa, actualizarConfig } from "./ui/components/panelConfig.js";
-import { cargarMetricas } from "./ui/components/panelMetrics.js";
-import { cargarGraficos } from "./ui/components/panelCharts.js";
+} from "./ui/components/panel/panelModals.js";
+import {
+  cargarTasa,
+  actualizarConfig,
+} from "./ui/components/panel/panelConfig.js";
+import { cargarMetricas } from "./ui/components/panel/panelMetrics.js";
+import { cargarGraficos } from "./ui/components/panel/panelCharts.js";
 import {
   cargarTransacciones,
   resetYPaginación,
@@ -19,17 +22,17 @@ import {
   verRecibo,
   exportarCSV,
   setSort,
-} from "./ui/components/panelTransaccionesTable.js";
+} from "./ui/components/panel/panelTransaccionesTable.js";
 import {
   subscribeRealtime,
   setupAudioUnlock,
-} from "./ui/components/panelRealtime.js";
+} from "./ui/components/panel/panelRealtime.js";
 import {
   abrirDetallesTransaccion,
   generarPDF,
   enviarWA_Remitente,
   enviarWA_Destinatario,
-} from "./ui/components/panelTransactionDetails.js";
+} from "./ui/components/panel/panelTransactionDetails.js";
 import { initializeStatusIndicator } from "./ui/components/statusIndicator.js";
 
 let segundosParaRefresco = 15;

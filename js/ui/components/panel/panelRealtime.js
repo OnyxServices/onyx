@@ -1,7 +1,7 @@
 /** Componente UI: Real-time del panel (suscripción a nuevas transacciones) */
 
-import { showNewTransactionToast } from "../utils/swalUtils.js";
-import { subscribeToInserts, unsubscribe } from "../../api/realtimeApi.js";
+import { showNewTransactionToast } from "../../utils/swalUtils.js";
+import { subscribeToInserts, unsubscribe } from "../../../api/realtimeApi.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 

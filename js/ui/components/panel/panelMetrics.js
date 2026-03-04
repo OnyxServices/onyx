@@ -1,6 +1,6 @@
 /** Componente UI: Métricas del panel (resumen diario) */
 
-import { calcularMetricasDia } from "../../services/panelMetricsService.js";
+import { calcularMetricasDia } from "../../../services/panelMetricsService.js";
 
 export async function cargarMetricas() {
   const data = await calcularMetricasDia();

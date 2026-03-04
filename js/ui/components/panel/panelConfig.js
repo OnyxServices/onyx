@@ -1,8 +1,8 @@
 /** Componente UI: Configuración del panel (tasa Zelle) */
 
-import { loadConfig, updateConfig } from "../../services/configService.js";
-import { getPanelToast } from "../utils/panelToast.js";
-import { validateZelleUS } from "../../validators/formValidators.js";
+import { loadConfig, updateConfig } from "../../../services/configService.js";
+import { getPanelToast } from "../../utils/panelToast.js";
+import { validateZelleUS } from "../../../validators/formValidators.js";
 
 let configId = 2; // TODO: Esto debería venir dinámicamente o ser una constante global
 

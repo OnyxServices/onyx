@@ -1,11 +1,11 @@
 /** Componente UI: Detalles de transacción del panel */
 
-import { getTransactionById } from "../../services/transactionService.js";
-import { getPanelToast } from "../utils/panelToast.js";
+import { getTransactionById } from "../../../services/transactionService.js";
+import { getPanelToast } from "../../utils/panelToast.js";
 import {
   generarPDFTransaccion,
   enviarWhatsAppTransaccion,
-} from "../../services/panelTransactionDetailsService.js";
+} from "../../../services/panelTransactionDetailsService.js";
 
 const Swal = typeof window !== "undefined" ? window.Swal : null;
 

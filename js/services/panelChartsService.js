@@ -4,73 +4,83 @@ import { listTransactions } from "./transactionService.js";
 import { getAll as getConfigAll } from "../api/configApi.js";
 
 export async function calcularGraficosData() {
-  const hoy = new Date();
-  const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-  const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-  const finHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
+  const today = new Date();
+  const startMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const startDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+  const endDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 1,
+  );
 
   // Datos del día
-  const respHoy = await listTransactions({
+  const todayData = await listTransactions({
     state: "approved",
-    from: inicioHoy.toISOString(),
-    to: finHoy.toISOString(),
+    from: startDay.toISOString(),
+    to: endDay.toISOString(),
     pageSize: null,
   });
-  const txHoy = respHoy.data || [];
+  const txToday = todayData.data || [];
 
   // Datos del mes
   const respMes = await listTransactions({
     state: "approved",
-    from: inicioMes.toISOString(),
-    to: finHoy.toISOString(),
+    from: startMonth.toISOString(),
+    to: endDay.toISOString(),
     pageSize: null,
   });
-  const txMes = respMes.data || [];
+  const txMonth = respMes.data || [];
 
   const cfgResp = await getConfigAll({ limit: 1 });
-  let tasa = 24;
+  let exchangeRate = 24;
   if (cfgResp && cfgResp.data) {
     const cfg = cfgResp.data;
-    tasa = Array.isArray(cfg)
+    exchangeRate = Array.isArray(cfg)
       ? cfg[0]?.exchange_rate || 24
       : cfg.exchange_rate || 24;
   }
 
   // Calcular totales del día
-  const totalUsdHoy = (txHoy || []).reduce(
+  const totalUsdToday = (txToday || []).reduce(
     (sum, tx) => sum + (tx.usd_amount || 0),
     0,
   );
-  const totalCupHoy = totalUsdHoy * tasa;
-  const cantidadHoy = (txHoy || []).length;
+  const totalCupToday = totalUsdToday * exchangeRate;
+  const numberOperationsToday = (txToday || []).length;
 
   // Calcular totales del mes
-  const totalUsdMes = (txMes || []).reduce(
+  const totalUsdMonth = (txMonth || []).reduce(
     (sum, tx) => sum + (tx.usd_amount || 0),
     0,
   );
-  const totalCupMes = totalUsdMes * tasa;
-  const cantidadMes = (txMes || []).length;
+  const totalCupMonth = totalUsdMonth * exchangeRate;
+  const numberOperationsMonth = (txMonth || []).length;
 
   // Calcular promedio diario
-  const promedioDia =
-    cantidadMes > 0 ? (cantidadMes / hoy.getDate()).toFixed(1) : 0;
+  const todayAVG =
+    numberOperationsMonth > 0
+      ? (numberOperationsMonth / today.getDate()).toFixed(1)
+      : 0;
 
   // Proyección de mes
-  const proyeccionMes = Math.round((totalUsdMes / hoy.getDate()) * 30);
+  const monthProjection = Math.round((totalUsdMonth / today.getDate()) * 30);
 
   return {
-    dia: {
-      cantidad: cantidadHoy,
-      usd: totalUsdHoy,
-      cup: totalCupHoy,
+    day: {
+      numberOperations: numberOperationsToday,
+      usd: totalUsdToday,
+      cup: totalCupToday,
     },
-    mes: {
-      cantidad: cantidadMes,
-      usd: totalUsdMes,
-      cup: totalCupMes,
-      promedioDia,
-      proyeccionMes,
+    month: {
+      numberOperations: numberOperationsMonth,
+      usd: totalUsdMonth,
+      cup: totalCupMonth,
+      avg: todayAVG,
+      projection: monthProjection,
     },
   };
 }
