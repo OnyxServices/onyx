@@ -8,6 +8,7 @@
 const TELEGRAM_BOT_TOKEN = "8608347138:AAEKQu_alalb28XFZt1vU-WCcXOii-eSa-4";
 const TELEGRAM_CHAT_IDs   = [
  "6494169074", //----Otoniel ID
+ "926909408",  //----Leo ID
  ]; 
 
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
