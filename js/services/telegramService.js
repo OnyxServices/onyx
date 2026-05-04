@@ -1,12 +1,16 @@
 /**
  * Servicio de notificaciones: envía datos de transacción al bot de Telegram.
- * Usa la API de Telegram (sendPhoto) para enviar la imagen del comprobante
- * junto con un caption formateado con todos los datos del formulario.
+ * Soporta múltiples destinatarios (grupos, canales, chats privados).
  *
- * ⚙️  CONFIGURACIÓN — reemplaza estos dos valores antes de usar:
+ * ⚙️  CONFIGURACIÓN — reemplaza estos valores antes de usar:
  */
 const TELEGRAM_BOT_TOKEN = "8608347138:AAEKQu_alalb28XFZt1vU-WCcXOii-eSa-4";
-const TELEGRAM_CHAT_ID  = "6994169074";
+
+// Agrega o quita IDs según necesites (grupos llevan el signo negativo)
+const TELEGRAM_CHAT_IDS = [
+  "6494169074",   // Oto
+  "926909408",   // Leo
+];
 
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
@@ -16,17 +20,16 @@ const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
 /**
  * Construye el texto del mensaje con los datos de la transacción.
- * Telegram acepta hasta 1 024 caracteres en el caption de una foto.
  */
 function buildCaption(formData, montoUsd, tasaCambio) {
   const cup = (montoUsd * (tasaCambio || 0)).toLocaleString("es-CU");
 
   const direccion = [
-    formData.recipient_street         ? `Calle ${formData.recipient_street}`           : null,
-    formData.recipient_street_between ? `e/ ${formData.recipient_street_between}`       : null,
-    formData.recipient_building       ? `Edif. ${formData.recipient_building}`          : null,
-    formData.recipient_house_number   ? `# ${formData.recipient_house_number}`          : null,
-    formData.recipient_neighborhood   ? `Rpto. ${formData.recipient_neighborhood}`      : null,
+    formData.recipient_street         ? `Calle ${formData.recipient_street}`       : null,
+    formData.recipient_street_between ? `e/ ${formData.recipient_street_between}`  : null,
+    formData.recipient_building       ? `Edif. ${formData.recipient_building}`      : null,
+    formData.recipient_house_number   ? `# ${formData.recipient_house_number}`      : null,
+    formData.recipient_neighborhood   ? `Rpto. ${formData.recipient_neighborhood}`  : null,
     formData.recipient_municipality   || null,
     formData.recipient_province       || null,
   ]
@@ -60,37 +63,66 @@ function buildCaption(formData, montoUsd, tasaCambio) {
   ].join("\n");
 }
 
+/**
+ * Envía la foto a un único chat ID.
+ * Devuelve un objeto { chatId, ok, error? } para poder rastrear cuál falló.
+ */
+async function enviarAChat(chatId, proofFile, caption) {
+  try {
+    const body = new FormData();
+    body.append("chat_id",    chatId);
+    body.append("photo",      proofFile, proofFile.name);
+    body.append("caption",    caption);
+    body.append("parse_mode", "Markdown");
+
+    const response = await fetch(`${TELEGRAM_API}/sendPhoto`, {
+      method: "POST",
+      body,
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      return {
+        chatId,
+        ok: false,
+        error: `HTTP ${response.status}: ${err.description ?? "sin detalle"}`,
+      };
+    }
+
+    return { chatId, ok: true };
+  } catch (err) {
+    return { chatId, ok: false, error: err.message };
+  }
+}
+
 // ─────────────────────────────────────────────
 // API pública del servicio
 // ─────────────────────────────────────────────
 
 /**
- * Envía la foto del comprobante con el caption de los datos al bot de Telegram.
+ * Envía la foto del comprobante con el caption a TODOS los chats configurados.
+ * Los envíos se hacen en paralelo. Si alguno falla, se loguea pero no interrumpe
+ * los demás ni revierte la transacción en la base de datos.
  *
- * @param {Object} formData   - Datos del formulario (sender_*, recipient_*, usd_amount…)
- * @param {File}   proofFile  - Archivo de imagen del comprobante
+ * @param {Object} formData   - Datos del formulario
+ * @param {File}   proofFile  - Imagen del comprobante
  * @param {number} tasaCambio - Tasa de cambio actual
- * @returns {Promise<void>}
  */
 export async function notificarTransaccionTelegram(formData, proofFile, tasaCambio) {
   const montoUsd = parseFloat(formData.usd_amount) || 0;
   const caption  = buildCaption(formData, montoUsd, tasaCambio);
 
-  const body = new FormData();
-  body.append("chat_id",    TELEGRAM_CHAT_ID);
-  body.append("photo",      proofFile, proofFile.name);
-  body.append("caption",    caption);
-  body.append("parse_mode", "Markdown");
+  // Enviar a todos los chats en paralelo
+  const resultados = await Promise.all(
+    TELEGRAM_CHAT_IDS.map((chatId) => enviarAChat(chatId, proofFile, caption)),
+  );
 
-  const response = await fetch(`${TELEGRAM_API}/sendPhoto`, {
-    method: "POST",
-    body,
+  // Loguear resultado por chat
+  resultados.forEach(({ chatId, ok, error }) => {
+    if (ok) {
+      console.log(`✅ Telegram OK → chat ${chatId}`);
+    } else {
+      console.warn(`⚠️ Telegram FAIL → chat ${chatId}:`, error);
+    }
   });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(
-      `Telegram API error ${response.status}: ${err.description ?? "sin detalle"}`,
-    );
-  }
 }
